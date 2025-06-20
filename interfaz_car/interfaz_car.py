@@ -103,48 +103,58 @@ class interfaz_car:
                                 
                                 self.last_cx = cx
                                 self.last_cy = cy
-                                # Calcular desviación del centro
-                                error = cx - center_x
-                                max_error = width // 3  # Máximo error considerado (1/3 del ancho)
+                                # # Calcular desviación del centro
+                                # error = cx - center_x
+                                # max_error = width // 3  # Máximo error considerado (1/3 del ancho)
 
-                                # Normalizar el error a un rango de -1.0 a 1.0
-                                normalized_error = max(-1.0, min(1.0, error / max_error))
+                                # # Normalizar el error a un rango de -1.0 a 1.0
+                                # normalized_error = max(-1.0, min(1.0, error / max_error))
 
-                                # Velocidad base
-                                base_speed = 40
+                                # # Velocidad base
+                                # base_speed = 40
 
-                                # Calcular velocidades para cada rueda (control proporcional)
-                                left_speed = int(base_speed - (normalized_error * base_speed * 0.8))
-                                right_speed = int(base_speed + (normalized_error * base_speed * 0.8))
+                                # # Calcular velocidades para cada rueda (control proporcional)
+                                # left_speed = int(base_speed - (normalized_error * base_speed * 0.8))
+                                # right_speed = int(base_speed + (normalized_error * base_speed * 0.8))
 
-                                # Asegurar que las velocidades estén en rangos válidos
-                                left_speed = max(20, min(70, left_speed))
-                                right_speed = max(20, min(70, right_speed))
+                                # # Asegurar que las velocidades estén en rangos válidos
+                                # left_speed = max(20, min(70, left_speed))
+                                # right_speed = max(20, min(70, right_speed))
 
-                                # Aplicar el movimiento sin detener el carro
-                                car.Car_Run(left_speed, right_speed)
+                                # # Aplicar el movimiento sin detener el carro
+                                # car.Car_Run(left_speed, right_speed)
+                                # car.Car_Stop()
+                                # time.sleep(0.1)  # Pequeño retraso para permitir que el carro se mueva
 
                                 # Visualización
-                                if abs(normalized_error) > 0.3:
-                                    position = "Turning" + (" Right" if normalized_error > 0 else " Left")
-                                    color = (0, 165, 255)  # Naranja
-                                else:
-                                    position = "Forward"
-                                    color = (0, 255, 0)  # Verde
+                                # if abs(normalized_error) > 0.3:
+                                #     position = "Turning" + (" Right" if normalized_error > 0 else " Left")
+                                #     color = (0, 165, 255)  # Naranja
+                                # else:
+                                #     position = "Forward"
+                                #     color = (0, 255, 0)  # Verde
                                 
+                                position = "Center"
                                 # Determine position
-                                if position == "Right":
+                                if cx < center_x - 100:
+                                    position = "Left"
                                     color = (0, 0, 255)  # Red
-                                    car.Car_Left(36, 36)
+                                    car.Car_Left(32, 32)
+                                    time.sleep(0.1)  # Small delay to allow car to run
+                                    car.Car_Stop()
                                     
-                                elif position == "Left":
+                                elif cx > center_x + 100:
+                                    position = "Right"
                                     color = (0, 0, 255)  # Red
-                                    car.Car_Right(36, 36)
+                                    car.Car_Right(32, 32)
+                                    time.sleep(0.1)  # Small delay to allow car to run
+                                    car.Car_Stop()
                                     
                                 else:
                                     position = "Center"
                                     color = (0, 255, 0)  # Green
-                                    car.Car_Run(45, 45)
+                                    car.Car_Run(35, 35)
+                                    car.Car_Stop()
                                     time.sleep(0.1)  # Small delay to allow car to run
                                     car.Car_Stop()
                                 
