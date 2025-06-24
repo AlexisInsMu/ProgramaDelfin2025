@@ -55,21 +55,21 @@ class interfaz_car:
                 height, width = frame.shape[:2]
                 center_x = width // 2
                 
-                #frame = cv.GaussianBlur(frame, (5, 5), 0)
                 # Process the frame
                 hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
-                #kernel = np.ones((5,5), np.uint8)
                 mascara1 = cv.inRange(hsv, lower_hsv, upper_hsv)
 
                 # Aplicar opening para eliminar ruido pequeño
-                #mascara1 = cv.morphologyEx(mascara1, cv.MORPH_OPEN, kernel)
 
                 # Aplicar closing para cerrar pequeños huecos
-                #mascara1 = cv.morphologyEx(mascara1, cv.MORPH_CLOSE, kernel)
                 #mascara2 = cv.inRange(hsv, rojo_bajo2, rojo_alto2)
                 #mascara_rojo = cv.bitwise_or(mascara1, mascara2)
                 
-                # Find contours
+                #image improvement
+                kernel = np.ones((5,5), np.uint8)
+                mascara1 = cv.morphologyEx(mascara1, cv.MORPH_OPEN, kernel)
+                mascara1 = cv.morphologyEx(mascara1, cv.MORPH_CLOSE, kernel)
+                mascara1 = cv.GaussianBlur(mascara1, (5, 5), 0)
                 contornos, _ = cv.findContours(mascara1, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
                 
                 
