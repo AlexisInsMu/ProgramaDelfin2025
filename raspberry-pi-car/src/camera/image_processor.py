@@ -58,10 +58,23 @@ class LineDetector:
                 self.last_cy = cy
 
         return frame, mask, self.last_cx, self.last_cy
+    
+    
+    
+class QrDetector:
+    def __init__(self):
+        self.detector = cv.QRCodeDetector()
+        
+    def detect_qr(self, frame) -> tuple:
+        retval, decoded_info, points, straight_qrcode = self.detector.detectAndDecodeMulti(frame)
+        
+        return retval, decoded_info, points, straight_qrcode
+        
 
 class ImageProcessor:
     def __init__(self, shared_data):
         self.line_detector = LineDetector()
+        self.qr_detector = QrDetector()
         self.shared_data = shared_data
         self.running = False
         self.lock = Lock()
@@ -83,11 +96,13 @@ class ImageProcessor:
                 with self.lock:
                     # Detectar línea en el frame
                     processed, mask, cx, cy = self.line_detector.detect_line(frame.copy())
+                    retval, decoded_info, points, straight_qrcode = self.qr_detector.detect_qr(frame.copy())
                     self.processed_frame = processed
                     self.mask = mask
                     
                     # Compartir el error con el controlador
                     self.shared_data.set_data('line_error', (cx, cy) if cx is not None and cy is not None else (None, None))
+                    self.shared_data.set_data('position_qr', points if retval else None)
                     
             time.sleep(0.01)  # Control de velocidad
             
