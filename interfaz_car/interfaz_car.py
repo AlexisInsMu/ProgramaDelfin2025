@@ -33,8 +33,9 @@ class interfaz_car:
         # Create window once
         cv.namedWindow('Object Tracking', cv.WINDOW_NORMAL)
 
-        lower_hsv = np.array([40,80,40])
-        upper_hsv = np.array([85,255,255])
+
+        lower_hsv = np.array([35,40,30])
+        upper_hsv = np.array([90,255,255])
 
         # Rango alto para rojo
         rojo_bajo2 = np.array([160, 100, 100])
