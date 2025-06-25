@@ -99,34 +99,29 @@ class ImageProcessor:
                     # Detectar aruco
                     gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
                     aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_50)
-                    parameters = cv.aruco.DetectorParameters_create()  # Corrección aquí
-                    corners, ids, rejectedImgPoints = cv.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
-
+                    parameters = cv.aruco.DetectorParameters()
+                    detector = cv.aruco.ArucoDetector(aruco_dict, parameters)
+                    corners, ids, rejectedImgPoints = detector.detectMarkers(gray)
+                    points = None
                     # Dibujar marcadores detectados si hay alguno
-                    if ids is not None:
-                        cv.aruco.drawDetectedMarkers(processed, corners, ids)
+                    if ids is not None and len(ids) > 0:
+                        #cv.aruco.drawDetectedMarkers(processed, corners, ids)
+                        # Procesar los puntos de los marcadores
+                        points = [corner[0] for corner in corners]
+                        print(f"aruco code: {ids.flatten()}")
                         
-                        # Procesar cada marcador detectado
-                        points = []
-                        for i, corner in enumerate(corners):
-                            # Obtener las esquinas y agregarlas a los puntos
-                            marker_corners = corner.reshape((4, 2))
-                            points.append(marker_corners.tolist())
+                    # Compartir tanto los puntos como los IDs para que main.py pueda usarlos
+                    self.shared_data.set_data('position_qr', points)
+                    self.shared_data.set_data('aruco_ids', ids)
+                        
+                        
                             
-                            # Calcular centro
-                            center_x = int(np.mean(marker_corners[:, 0]))
-                            center_y = int(np.mean(marker_corners[:, 1]))
-                            cv.circle(processed, (center_x, center_y), 5, (0, 0, 255), -1)
-                        
-                        self.shared_data.set_data('position_qr', points)
-                    else:
-                        self.shared_data.set_data('position_qr', None)
+                            
                     self.processed_frame = processed
                     self.mask = mask
                     
                     # Compartir el error con el controlador
                     self.shared_data.set_data('line_error', (cx, cy) if cx is not None and cy is not None else (None, None))
-                    self.shared_data.set_data('position_qr', points if retval else None)
                     
             time.sleep(0.01)  # Control de velocidad
             

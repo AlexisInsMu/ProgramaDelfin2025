@@ -64,49 +64,52 @@ def main():
                 cv2.imshow("Máscara", mask)
                 
             if SHOW_WINDOWS['debug'] and processed_frame is not None:
+                # Obtener datos para visualización
                 position = shared_data.get_data('position', "Unknown")
                 color = shared_data.get_data('color', (255, 255, 255))
-                debug_info = f"Posición: {position}, Color: {color}"
                 cx, cy = shared_data.get_data('line_error', (None, None))
-                position1 = shared_data.get_data('position_qr', "Unknown")
+                
+                # Obtener datos de ArUco
+                aruco_points = shared_data.get_data('position_qr', None)
+                aruco_ids = shared_data.get_data('aruco_ids', None)
+                
+                # Crear una copia del frame procesado para dibujar información de depuración
+                debug_frame = processed_frame.copy()
+                
+                # Dibujar información de seguimiento de línea
                 if cx is not None and cy is not None:
-                    if position1 is not None and len(position1) > 0:
-                        centralx = 0
-                        centraly = 0
-                        area = 0
+                    cv2.putText(debug_frame, position, (cx-20, cy-20), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
+                    cv2.circle(debug_frame, (cx, cy), 5, color, -1)
+                
+                # Dibujar información de ArUcos detectados
+                if aruco_points is not None and len(aruco_points) > 0:
+                    # Dibujar un texto indicando cuántos ArUcos se detectaron
+                    num_arucos = len(aruco_points)
+                    cv2.putText(debug_frame, f"ArUcos: {num_arucos}", (10, 30), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+                    
+                    # Los marcadores ya están dibujados en processed_frame por ImageProcessor
+                    # Aquí solo añadimos información adicional
+                    for i, points in enumerate(aruco_points):
+                        # Calcular el centro del marcador
+                        center_x = int(np.mean([p[0] for p in points]))
+                        center_y = int(np.mean([p[1] for p in points]))
                         
-                        for i in range(len(position1)):
-                            if position1[i] is not None:
-                                # Asegurarse de que estamos trabajando con escalares
-                                x_i = float(position1[i][0]) if isinstance(position1[i][0], (int, float, np.number)) else 0
-                                y_i = float(position1[i][1]) if isinstance(position1[i][1], (int, float, np.number)) else 0
-                                
-                                if i == 0 and len(position1) > 1:
-                                    x_prev = float(position1[-1][0]) if isinstance(position1[-1][0], (int, float, np.number)) else 0
-                                    y_prev = float(position1[-1][1]) if isinstance(position1[-1][1], (int, float, np.number)) else 0
-                                    
-                                    product_point = x_i * x_prev - y_i * y_prev
-                                    area += (x_i + x_prev) * (y_i + y_prev)
-                                    centralx += (x_i + x_prev) * product_point
-                                    centraly += (y_i + y_prev) * product_point
-                                elif i > 0:
-                                    x_prev = float(position1[i-1][0]) if isinstance(position1[i-1][0], (int, float, np.number)) else 0
-                                    y_prev = float(position1[i-1][1]) if isinstance(position1[i-1][1], (int, float, np.number)) else 0
-                                    
-                                    product_point = x_i * x_prev - y_i * y_prev
-                                    area += (x_i + x_prev) * (y_i + y_prev)
-                                    centralx += (x_i + x_prev) * product_point
-                                    centraly += (y_i + y_prev) * product_point      
-                            if area != 0:
-                                centralx = int(centralx/(3*area))
-                                centraly = int(centraly/(3*area))
-                            else:
-                                centralx = 0
-                                centraly = 0
-                            cv2.circle(processed_frame, (centralx, centraly), 5, color, -1)
-                            
-                    cv2.putText(processed_frame, position, (cx-20, cy-20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-                    cv2.imshow("Depuración", processed_frame)
+                        # Dibujar el centro del marcador
+                        cv2.circle(debug_frame, (center_x, center_y), 5, (0, 0, 255), -1)
+                        
+                        # Mostrar el ID del marcador si está disponible
+                        if aruco_ids is not None and i < len(aruco_ids):
+                            marker_id = aruco_ids[i][0]
+                            cv2.putText(debug_frame, f"ID: {marker_id}", (center_x + 10, center_y), 
+                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                else:
+                    cv2.putText(debug_frame, "No ArUcos", (10, 30), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                
+                # Mostrar el frame de depuración
+                cv2.imshow("Depuración", debug_frame)
                 
                 
         
