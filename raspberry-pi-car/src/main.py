@@ -23,7 +23,7 @@ def main():
     shared_data = ThreadSafeData()
     
     # Inicializar componentes
-    camera = CameraManager(shared_data, resolution=(320, 240))
+    camera = CameraManager(shared_data, resolution=(600, 500))
     processor = ImageProcessor(shared_data)
     controller = CarController(shared_data)
     
@@ -77,6 +77,7 @@ def main():
                 debug_frame = processed_frame.copy()
                 
                 # Dibujar información de seguimiento de línea
+                area =None
                 if cx is not None and cy is not None:
                     cv2.putText(debug_frame, position, (cx-20, cy-20), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
@@ -84,20 +85,40 @@ def main():
                 
                 # Dibujar información de ArUcos detectados
                 if aruco_points is not None and len(aruco_points) > 0:
-                    # Dibujar un texto indicando cuántos ArUcos se detectaron
+                    # Dibujar un texto indicando cuántos ArUcos se detectados
                     num_arucos = len(aruco_points)
                     cv2.putText(debug_frame, f"ArUcos: {num_arucos}", (10, 30), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                     
-                    # Los marcadores ya están dibujados en processed_frame por ImageProcessor
-                    # Aquí solo añadimos información adicional
+                    # Dibujar los marcos de los ArUcos
                     for i, points in enumerate(aruco_points):
+                        # Convertir puntos a formato de numpy para dibujar polígono
+                        marker_points = np.array(points, dtype=np.int32)
+                        
+                        # Dibujar el contorno del marcador
+                        cv2.polylines(debug_frame, [marker_points], True, (0, 255, 0), 2)
+                        
+                        # Dibujar las esquinas del marcador
+                        for j, corner in enumerate(points):
+                            corner_x, corner_y = int(corner[0]), int(corner[1])
+                            cv2.circle(debug_frame, (corner_x, corner_y), 4, (255, 0, 255), -1)
+                            # Opcional: mostrar número de esquina
+                            cv2.putText(debug_frame, str(j), (corner_x + 5, corner_y + 5),
+                                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 255), 1)
+                        
                         # Calcular el centro del marcador
                         center_x = int(np.mean([p[0] for p in points]))
                         center_y = int(np.mean([p[1] for p in points]))
                         
+                        area = cv2.contourArea(marker_points)
                         # Dibujar el centro del marcador
                         cv2.circle(debug_frame, (center_x, center_y), 5, (0, 0, 255), -1)
+                        print(f"ArUco ID {i}: Área = {area}")
+                        
+                        if(area > float(500*600)/float(7)):
+                            shared_data.set_data('alto', "True")
+                        else:
+                            shared_data.set_data('alto', "False")
                         
                         # Mostrar el ID del marcador si está disponible
                         if aruco_ids is not None and i < len(aruco_ids):
@@ -105,6 +126,10 @@ def main():
                             cv2.putText(debug_frame, f"ID: {marker_id}", (center_x + 10, center_y), 
                                         cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 else:
+                    if aruco_ids is not None:
+                        shared_data.set_data('position_qr', None)
+                        shared_data.set_data('aruco_ids', None)
+                        shared_data.set_data('alto', "False")
                     cv2.putText(debug_frame, "No ArUcos", (10, 30), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 

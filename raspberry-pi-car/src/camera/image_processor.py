@@ -105,11 +105,13 @@ class ImageProcessor:
                     points = None
                     # Dibujar marcadores detectados si hay alguno
                     if ids is not None and len(ids) > 0:
-                        #cv.aruco.drawDetectedMarkers(processed, corners, ids)
+                        # Dibujar los marcadores en la imagen procesada
+                        cv.aruco.drawDetectedMarkers(processed, corners, ids)
+                        
                         # Procesar los puntos de los marcadores
                         points = [corner[0] for corner in corners]
                         print(f"aruco code: {ids.flatten()}")
-                        
+                            
                     # Compartir tanto los puntos como los IDs para que main.py pueda usarlos
                     self.shared_data.set_data('position_qr', points)
                     self.shared_data.set_data('aruco_ids', ids)

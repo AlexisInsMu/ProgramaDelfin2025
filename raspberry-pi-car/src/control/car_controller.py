@@ -20,9 +20,16 @@ class CarController:
             center_x = self.shared_data.get_data('center_x', 300)
             position = "Unknown"
             color = (255, 255, 255)  # Default color (white)
-            if(cx is None or cy is None):
-                # If no line detected, stop the car
+            alto = self.shared_data.get_data('alto', False)
+            if alto:
                 self.car.Car_Stop()
+                time.sleep(0.1)
+            elif (cx is None or cy is None):
+                # If no line detected, stop the car
+                self.car.Car_Left(32, 32)
+                time.sleep(0.1)
+                self.car.Car_Stop()
+                
             else:
                 if cx < center_x - 50:
                     position = "Left"
