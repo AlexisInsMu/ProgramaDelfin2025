@@ -71,39 +71,39 @@ def main():
                 position1 = shared_data.get_data('position_qr', "Unknown")
                 if cx is not None and cy is not None:
                     if position1 is not None and len(position1) > 0:
-                    centralx = 0
-                    centraly = 0
-                    area = 0
-                    
-                    for i in range(len(position1)):
-                        if position1[i] is not None:
-                            # Asegurarse de que estamos trabajando con escalares
-                            x_i = float(position1[i][0]) if isinstance(position1[i][0], (int, float, np.number)) else 0
-                            y_i = float(position1[i][1]) if isinstance(position1[i][1], (int, float, np.number)) else 0
-                            
-                            if i == 0 and len(position1) > 1:
-                                x_prev = float(position1[-1][0]) if isinstance(position1[-1][0], (int, float, np.number)) else 0
-                                y_prev = float(position1[-1][1]) if isinstance(position1[-1][1], (int, float, np.number)) else 0
+                        centralx = 0
+                        centraly = 0
+                        area = 0
+                        
+                        for i in range(len(position1)):
+                            if position1[i] is not None:
+                                # Asegurarse de que estamos trabajando con escalares
+                                x_i = float(position1[i][0]) if isinstance(position1[i][0], (int, float, np.number)) else 0
+                                y_i = float(position1[i][1]) if isinstance(position1[i][1], (int, float, np.number)) else 0
                                 
-                                product_point = x_i * x_prev - y_i * y_prev
-                                area += (x_i + x_prev) * (y_i + y_prev)
-                                centralx += (x_i + x_prev) * product_point
-                                centraly += (y_i + y_prev) * product_point
-                            elif i > 0:
-                                x_prev = float(position1[i-1][0]) if isinstance(position1[i-1][0], (int, float, np.number)) else 0
-                                y_prev = float(position1[i-1][1]) if isinstance(position1[i-1][1], (int, float, np.number)) else 0
-                                
-                                product_point = x_i * x_prev - y_i * y_prev
-                                area += (x_i + x_prev) * (y_i + y_prev)
-                                centralx += (x_i + x_prev) * product_point
-                                centraly += (y_i + y_prev) * product_point      
-                        if area != 0:
-                            centralx = int(centralx/(3*area))
-                            centraly = int(centraly/(3*area))
-                        else:
-                            centralx = 0
-                            centraly = 0
-                        cv2.circle(processed_frame, (centralx, centraly), 5, color, -1)
+                                if i == 0 and len(position1) > 1:
+                                    x_prev = float(position1[-1][0]) if isinstance(position1[-1][0], (int, float, np.number)) else 0
+                                    y_prev = float(position1[-1][1]) if isinstance(position1[-1][1], (int, float, np.number)) else 0
+                                    
+                                    product_point = x_i * x_prev - y_i * y_prev
+                                    area += (x_i + x_prev) * (y_i + y_prev)
+                                    centralx += (x_i + x_prev) * product_point
+                                    centraly += (y_i + y_prev) * product_point
+                                elif i > 0:
+                                    x_prev = float(position1[i-1][0]) if isinstance(position1[i-1][0], (int, float, np.number)) else 0
+                                    y_prev = float(position1[i-1][1]) if isinstance(position1[i-1][1], (int, float, np.number)) else 0
+                                    
+                                    product_point = x_i * x_prev - y_i * y_prev
+                                    area += (x_i + x_prev) * (y_i + y_prev)
+                                    centralx += (x_i + x_prev) * product_point
+                                    centraly += (y_i + y_prev) * product_point      
+                            if area != 0:
+                                centralx = int(centralx/(3*area))
+                                centraly = int(centraly/(3*area))
+                            else:
+                                centralx = 0
+                                centraly = 0
+                            cv2.circle(processed_frame, (centralx, centraly), 5, color, -1)
                             
                     cv2.putText(processed_frame, position, (cx-20, cy-20), cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
                     cv2.imshow("Depuración", processed_frame)

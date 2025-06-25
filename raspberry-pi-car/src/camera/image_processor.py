@@ -96,7 +96,31 @@ class ImageProcessor:
                 with self.lock:
                     # Detectar línea en el frame
                     processed, mask, cx, cy = self.line_detector.detect_line(frame.copy())
-                    retval, decoded_info, points, straight_qrcode = self.qr_detector.detect_qr(frame.copy())
+                    # Detectar aruco
+                    gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+                    aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_50)
+                    parameters = cv.aruco.DetectorParameters_create()  # Corrección aquí
+                    corners, ids, rejectedImgPoints = cv.aruco.detectMarkers(gray, aruco_dict, parameters=parameters)
+
+                    # Dibujar marcadores detectados si hay alguno
+                    if ids is not None:
+                        cv.aruco.drawDetectedMarkers(processed, corners, ids)
+                        
+                        # Procesar cada marcador detectado
+                        points = []
+                        for i, corner in enumerate(corners):
+                            # Obtener las esquinas y agregarlas a los puntos
+                            marker_corners = corner.reshape((4, 2))
+                            points.append(marker_corners.tolist())
+                            
+                            # Calcular centro
+                            center_x = int(np.mean(marker_corners[:, 0]))
+                            center_y = int(np.mean(marker_corners[:, 1]))
+                            cv.circle(processed, (center_x, center_y), 5, (0, 0, 255), -1)
+                        
+                        self.shared_data.set_data('position_qr', points)
+                    else:
+                        self.shared_data.set_data('position_qr', None)
                     self.processed_frame = processed
                     self.mask = mask
                     
