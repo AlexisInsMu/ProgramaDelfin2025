@@ -115,7 +115,7 @@ def main():
                         cv2.circle(debug_frame, (center_x, center_y), 5, (0, 0, 255), -1)
                         print(f"ArUco ID {i}: Área = {area}")
                         
-                        if(area > float(500*600)/float(7)):
+                        if(area > float(500*600)/float(5)):
                             shared_data.set_data('alto', "True")
                         else:
                             shared_data.set_data('alto', "False")
