@@ -1,0 +1,17 @@
+{
+  "camera": {
+    "resolution": "1920x1080",
+    "fps": 30
+  },
+  "motor": {
+    "max_speed": 100,
+    "min_speed": 0
+  },
+  "sensors": {
+    "distance_threshold": 30
+  },
+  "threading": {
+    "camera_processing_thread": true,
+    "car_control_thread": true
+  }
+}

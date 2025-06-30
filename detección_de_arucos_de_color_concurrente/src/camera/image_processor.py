@@ -1,0 +1,134 @@
+import cv2 as cv  # Change this to match the import convention in your file
+import numpy as np
+from threading import Thread, Lock
+import time
+from src.utils.thread_safe_data import ThreadSafeData  # Changed from relative to absolute import
+
+
+class LineDetector:
+    def __init__(self):
+        self.lower_hsv = np.array([45,50,50])
+        self.upper_hsv = np.array([85,255,255])
+        self.last_cx = None
+        self.last_cy = None
+        
+    def detect_line(self, frame) -> tuple:
+        hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+        height, width = frame.shape[:2]
+        # Usar el 60% inferior de la imagen
+        roi_height = int(height * 0.6)  
+        roi = frame[height-roi_height:height, 0:width]
+        mask = cv.inRange(hsv, self.lower_hsv, self.upper_hsv)
+
+        # Aplicar opening para eliminar ruido pequeño
+
+        # Aplicar closing para cerrar pequeños huecos
+        #mascara2 = cv.inRange(hsv, rojo_bajo2, rojo_alto2)
+        #mascara_rojo = cv.bitwise_or(mascara1, mascara2)
+        
+        #image improvement
+        kernel = np.ones((5,5), np.uint8)
+        mask = cv.morphologyEx(mask, cv.MORPH_OPEN, kernel)
+        mask = cv.morphologyEx(mask, cv.MORPH_CLOSE, kernel)
+        mask = cv.GaussianBlur(mask, (5, 5), 0)
+        contornos, _ = cv.findContours(mask, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+        
+        
+        # Process each contour
+        for contorno in contornos:
+            # Filter small contours
+            area = cv.contourArea(contorno)
+            if area > 500:
+                # Filtrar por relación de aspecto
+                x, y, w, h = cv.boundingRect(contorno)
+                aspect_ratio = float(w)/h
+    
+            cv.drawContours(frame, [contorno], -1, (0, 255, 0), 2)
+            
+            # Calculate centroid
+            M = cv.moments(contorno)
+            # Y en el procesamiento de centroides:
+            if M["m00"] != 0:
+                cx = int(M["m10"] / M["m00"])
+                cy = int(M["m01"] / M["m00"])
+                
+                # Suavizar movimientos con media ponderada
+                if self.last_cx is not None:
+                    # Aplica peso de 70% al valor actual y 30% al anterior
+                    cx = int(0.7 * cx + 0.3 * self.last_cx)
+                    cy = int(0.7 * cy + 0.3 * self.last_cy)
+                
+                self.last_cx = cx
+                self.last_cy = cy
+
+        return frame, mask, self.last_cx, self.last_cy
+    
+    
+    
+class Aruco_Detector:
+    def __init__(self):
+        self.aruco_dict = cv.aruco.getPredefinedDictionary(cv.aruco.DICT_5X5_50)
+        self.parameters = cv.aruco.DetectorParameters()
+        self.detector = cv.aruco.ArucoDetector(self.aruco_dict, self.parameters)
+        
+    def detect_aruco(self, frame):
+        gray = cv.cvtColor(frame, cv.COLOR_BGR2GRAY)
+        corners, ids, rejectedImgPoints = self.detector.detectMarkers(gray)
+        return corners, ids
+        
+
+class ImageProcessor:
+    def __init__(self, shared_data):
+        self.line_detector = LineDetector()
+        self.qr_detector = QrDetector()
+        self.shared_data = shared_data
+        self.running = False
+        self.lock = Lock()
+        self.frame = None
+        self.processed_frame = None
+        self.mask = None
+        
+    def start(self):
+        self.running = True
+        self.thread = Thread(target=self._processing_loop)
+        self.thread.daemon = True
+        self.thread.start()
+        
+    def _processing_loop(self):
+        while self.running:
+            # Obtener frame de forma segura
+            frame = self.shared_data.get_data('current_frame')
+            if frame is not None:
+                with self.lock:
+                    # Detectar línea en el frame
+                    
+                    # Detectar aruco
+                    corners, ids = Aruco_Detector().detect_aruco(frame.copy())
+                    
+                    # Aquí podrías procesar los resultados de los marcadores Aruco si es necesario
+                    if ids is not None:
+                        for i in range(len(ids)):
+                            cv.aruco.drawDetectedMarkers(self.processed_frame, corners, ids[i])
+                    
+                    
+                    self.shared_data.set_data('mask', self.mask)
+                    
+                    
+            time.sleep(0.01)  # Control de velocidad
+            
+    def get_processed_image(self):
+        with self.lock:
+            if self.processed_frame is not None:
+                return self.processed_frame.copy()
+            return None
+            
+    def get_mask(self):
+        with self.lock:
+            if self.mask is not None:
+                return self.mask.copy()
+            return None
+            
+    def stop(self):
+        self.running = False
+        if hasattr(self, 'thread'):
+            self.thread.join(timeout=1.0)
