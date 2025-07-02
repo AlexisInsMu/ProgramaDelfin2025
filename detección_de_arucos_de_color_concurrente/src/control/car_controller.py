@@ -38,21 +38,21 @@ class CarController:
                 if aruco_x < image_center_x - 50:
                     position = "Following ArUco - Left"
                     color = (255, 255, 0)  # Yellow
-                    self.car.Car_Left(35, 35)
+                    self.car.Car_Left(40, 40)
                     time.sleep(0.1)
                     self.car.Car_Stop()
                     
                 elif aruco_x > image_center_x + 50:
                     position = "Following ArUco - Right"
                     color = (255, 255, 0)  # Yellow
-                    self.car.Car_Right(35, 35)
+                    self.car.Car_Right(40, 40)
                     time.sleep(0.1)
                     self.car.Car_Stop()
                     
                 else:
                     position = "Following ArUco - Center"
                     color = (0, 255, 0)  # Green
-                    self.car.Car_Run(35, 35)
+                    self.car.Car_Run(40, 40)
                     time.sleep(0.1)
                     self.car.Car_Stop()
             
@@ -60,8 +60,6 @@ class CarController:
             else:
                 position = "Searching for ArUco"
                 color = (0, 0, 255)  # Red
-                self.car.Car_Left(35, 35)
-                time.sleep(0.1)
                 self.car.Car_Stop()
             
             # Guardar estado para depuración
