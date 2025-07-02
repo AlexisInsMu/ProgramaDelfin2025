@@ -1,4 +1,12 @@
 # ignore pycache
+# Python bytecode files
 __pycache__/
 *.pyc
 arucos/arucos_pdf.pdf
+*/__pycache__/
+*.pyc
+
+=4.8.0.76
+4.8.0.76
+# venv
+robot/
