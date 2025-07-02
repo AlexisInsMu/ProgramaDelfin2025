@@ -2,6 +2,12 @@ import cv2
 import time
 import sys
 import os
+
+# Configurar backend de OpenCV para evitar problemas con Qt y OpenGL
+import os
+os.environ['QT_QPA_PLATFORM'] = 'xcb'
+os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
+
 # Add the project root to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
@@ -14,13 +20,28 @@ import numpy as np
 SHOW_WINDOWS ={
     'camera': True,       # Imagen original de la cámara
     'processed': True,    # Imagen procesada con visualizaciones
-    'mask': True,        # Máscara binaria utilizada para detección
     'debug': True         # Información adicional de depuración
 }
 
 def main():
     # Objeto para compartir datos entre hilos
     shared_data = ThreadSafeData()
+    
+    # Verificar si podemos usar ventanas GUI
+    try:
+        # Intentar crear una ventana de prueba
+        test_img = np.zeros((100, 100, 3), dtype=np.uint8)
+        cv2.imshow("Test", test_img)
+        cv2.waitKey(1)
+        cv2.destroyWindow("Test")
+        print("GUI disponible - Mostrando ventanas")
+        gui_available = True
+    except:
+        print("GUI no disponible - Ejecutando sin ventanas")
+        gui_available = False
+        # Desactivar todas las ventanas si GUI no está disponible
+        for key in SHOW_WINDOWS:
+            SHOW_WINDOWS[key] = False
     
     # Inicializar componentes
     camera = CameraManager(shared_data, resolution=(600, 500))
@@ -40,110 +61,68 @@ def main():
     if SHOW_WINDOWS['camera']:
         cv2.namedWindow("Cámara", cv2.WINDOW_NORMAL)
     if SHOW_WINDOWS['processed']:
-        cv2.namedWindow("Seguimiento de Línea", cv2.WINDOW_NORMAL)
-    if SHOW_WINDOWS['mask']:
-        cv2.namedWindow("Máscara", cv2.WINDOW_NORMAL)
+        cv2.namedWindow("ArUcos Detectados", cv2.WINDOW_NORMAL)
     if SHOW_WINDOWS['debug']:
         cv2.namedWindow("Depuración", cv2.WINDOW_NORMAL)
     
     try:
         while True:
-            # Obtener imágenes procesadas para visualización
+            # Obtener datos
             frame = shared_data.get_data('current_frame')
             processed_frame = processor.get_processed_image()
-            mask = processor.get_mask()
+            aruco_points = shared_data.get_data('position_qr', None)
+            aruco_ids = shared_data.get_data('aruco_ids', None)
+            aruco_center = shared_data.get_data('aruco_center', None)
+            largest_area = shared_data.get_data('largest_aruco_area', 0)
+            alto = shared_data.get_data('alto', False)
+            position = shared_data.get_data('position', "Unknown")
             
-            # MOSTRAR las imágenes (esto falta en tu código)
+            # Mostrar ventanas
             if SHOW_WINDOWS['camera'] and frame is not None:
                 cv2.imshow("Cámara", frame)
             
             if SHOW_WINDOWS['processed'] and processed_frame is not None:
-                cv2.imshow("Seguimiento de Línea", processed_frame)
-            
-            if SHOW_WINDOWS['mask'] and mask is not None:
-                cv2.imshow("Máscara", mask)
+                cv2.imshow("ArUcos Detectados", processed_frame)
                 
             if SHOW_WINDOWS['debug'] and processed_frame is not None:
-                # Obtener datos para visualización
-                position = shared_data.get_data('position', "Unknown")
-                color = shared_data.get_data('color', (255, 255, 255))
-                cx, cy = shared_data.get_data('line_error', (None, None))
-                
-                # Obtener datos de ArUco
-                aruco_points = shared_data.get_data('position_qr', None)
-                aruco_ids = shared_data.get_data('aruco_ids', None)
-                
-                # Crear una copia del frame procesado para dibujar información de depuración
                 debug_frame = processed_frame.copy()
                 
-                # Dibujar información de seguimiento de línea
-                area =None
-                if cx is not None and cy is not None:
-                    cv2.putText(debug_frame, position, (cx-20, cy-20), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, color, 2)
-                    cv2.circle(debug_frame, (cx, cy), 5, color, -1)
-                
-                # Dibujar información de ArUcos detectados
+                # Información de ArUcos
                 if aruco_points is not None and len(aruco_points) > 0:
-                    # Dibujar un texto indicando cuántos ArUcos se detectados
                     num_arucos = len(aruco_points)
                     cv2.putText(debug_frame, f"ArUcos: {num_arucos}", (10, 30), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
                     
-                    # Dibujar los marcos de los ArUcos
-                    for i, points in enumerate(aruco_points):
-                        # Convertir puntos a formato de numpy para dibujar polígono
-                        marker_points = np.array(points, dtype=np.int32)
-                        
-                        # Dibujar el contorno del marcador
-                        cv2.polylines(debug_frame, [marker_points], True, (0, 255, 0), 2)
-                        
-                        # Dibujar las esquinas del marcador
-                        for j, corner in enumerate(points):
-                            corner_x, corner_y = int(corner[0]), int(corner[1])
-                            cv2.circle(debug_frame, (corner_x, corner_y), 4, (255, 0, 255), -1)
-                            # Opcional: mostrar número de esquina
-                            cv2.putText(debug_frame, str(j), (corner_x + 5, corner_y + 5),
-                                       cv2.FONT_HERSHEY_SIMPLEX, 0.4, (255, 0, 255), 1)
-                        
-                        # Calcular el centro del marcador
-                        center_x = int(np.mean([p[0] for p in points]))
-                        center_y = int(np.mean([p[1] for p in points]))
-                        
-                        area = cv2.contourArea(marker_points)
-                        # Dibujar el centro del marcador
-                        cv2.circle(debug_frame, (center_x, center_y), 5, (0, 0, 255), -1)
-                        print(f"ArUco ID {i}: Área = {area}")
-                        #aqui detecta si el area del aruco es mayor aun quinto del area de la imagen para asi detenerse
-                        if(area > float(500*600)/float(5)):
-                            shared_data.set_data('alto', True)
-                        else:
-                            shared_data.set_data('alto', False)
-                        
-                        # Mostrar el ID del marcador si está disponible
-                        if aruco_ids is not None and i < len(aruco_ids):
-                            marker_id = aruco_ids[i][0]
-                            cv2.putText(debug_frame, f"ID: {marker_id}", (center_x + 10, center_y), 
-                                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
+                    # Dibujar centro del ArUco más grande
+                    if aruco_center is not None:
+                        center_x, center_y = aruco_center
+                        cv2.circle(debug_frame, (center_x, center_y), 10, (0, 0, 255), -1)
+                        cv2.putText(debug_frame, f"Centro: ({center_x}, {center_y})", 
+                                    (center_x + 15, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
+                    
+                    # Mostrar área del ArUco más grande
+                    cv2.putText(debug_frame, f"Area Max: {largest_area:.0f}", (10, 60), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
+                    
+                    # Estado del sistema
+                    status_color = (0, 0, 255) if alto else (0, 255, 0)
+                    status_text = "ALTO - ArUco Grande" if alto else "SIGUIENDO"
+                    cv2.putText(debug_frame, status_text, (10, 90), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, status_color, 2)
                 else:
-                    if aruco_ids is not None:
-                        shared_data.set_data('position_qr', None)
-                        shared_data.set_data('aruco_ids', None)
-                        shared_data.set_data('alto', False)
-                    cv2.putText(debug_frame, "No ArUcos", (10, 30), 
+                    cv2.putText(debug_frame, "No ArUcos detectados", (10, 30), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 
-                # Mostrar el frame de depuración
+                # Mostrar posición del control
+                cv2.putText(debug_frame, f"Control: {position}", (10, 120), 
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
+                
                 cv2.imshow("Depuración", debug_frame)
-                
-                
-        
             
             # Salir con 'q'
             if cv2.waitKey(1) & 0xFF == ord('q'):
                 break
                 
-            # Control de velocidad del bucle principal
             time.sleep(0.03)
             
     except KeyboardInterrupt:

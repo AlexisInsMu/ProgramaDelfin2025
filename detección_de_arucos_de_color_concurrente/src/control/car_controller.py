@@ -16,46 +16,58 @@ class CarController:
 
     def control_loop(self):
         while self.running:
-            cx, cy = self.shared_data.get_data('line_error', (None, None))
-            center_x = self.shared_data.get_data('center_x', 300)
+            # Obtener datos del sistema
+            aruco_center = self.shared_data.get_data('aruco_center', None)
+            alto = self.shared_data.get_data('alto', False)
+            image_center_x = self.shared_data.get_data('center_x', 300)  # Centro de imagen por defecto
+            
             position = "Unknown"
             color = (255, 255, 255)  # Default color (white)
-            alto = self.shared_data.get_data('alto', False)
+            
+            # Prioridad 1: Si hay ArUco grande, detenerse
             if alto is True:
                 self.car.Car_Stop()
+                position = "Stopped - Large ArUco"
+                color = (0, 0, 255)  # Red
                 time.sleep(0.1)
-            elif (cx is None or cy is None):
-                # If no line detected, stop the car
-                self.car.Car_Left(32, 32)
-                time.sleep(0.1)
-                self.car.Car_Stop()
                 
-            else:
-                if cx < center_x - 50:
-                    position = "Left"
-                    color = (0, 0, 255)  # Red
+            # Prioridad 2: Si hay ArUco detectado, seguirlo
+            elif aruco_center is not None:
+                aruco_x, aruco_y = aruco_center
+                
+                if aruco_x < image_center_x - 50:
+                    position = "Following ArUco - Left"
+                    color = (255, 255, 0)  # Yellow
                     self.car.Car_Left(35, 35)
-                    time.sleep(0.1)  # Small delay to allow self.car to run
+                    time.sleep(0.1)
                     self.car.Car_Stop()
                     
-                elif cx > center_x + 50:
-                    position = "Right"
-                    color = (0, 0, 255)  # Red
+                elif aruco_x > image_center_x + 50:
+                    position = "Following ArUco - Right"
+                    color = (255, 255, 0)  # Yellow
                     self.car.Car_Right(35, 35)
-                    time.sleep(0.1)  # Small delay to allow self.car to run
+                    time.sleep(0.1)
                     self.car.Car_Stop()
                     
                 else:
-                    position = "Center"
+                    position = "Following ArUco - Center"
                     color = (0, 255, 0)  # Green
                     self.car.Car_Run(35, 35)
-                    self.car.Car_Stop()
-                    time.sleep(0.1)  # Small delay to allow self.car to run
+                    time.sleep(0.1)
                     self.car.Car_Stop()
             
+            # Prioridad 3: Si no hay ArUco, buscar girando
+            else:
+                position = "Searching for ArUco"
+                color = (0, 0, 255)  # Red
+                self.car.Car_Left(35, 35)
+                time.sleep(0.1)
+                self.car.Car_Stop()
+            
+            # Guardar estado para depuración
             self.shared_data.set_data('position', position)
             self.shared_data.set_data('color', color)
-            time.sleep(0.05)  # Simulate a control loop delay
+            time.sleep(0.05)
 
     def move_forward(self, speed):
         pass
