@@ -1,0 +1,5 @@
+Flask==2.0.1
+opencv-python==4.5.3.20210927
+RPi.GPIO==0.7.0
+numpy==1.21.2
+threading==3.9.7
