@@ -1,6 +1,8 @@
 # ignore pycache
 # Python bytecode files
 __pycache__/
+*.pyc
+arucos/arucos_pdf.pdf
 */__pycache__/
 *.pyc
 
