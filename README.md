@@ -1,94 +1,309 @@
-# Raspberry Pi Car Project
+# Programa Delfín 2025 - Raspberry Pi Car Project
 
-This project is a Raspberry Pi-based car that utilizes threading for camera processing and car control. The car is equipped with a camera for streaming and image processing, as well as sensors for obstacle detection.
+Este proyecto es un sistema integral para un carro inteligente basado en Raspberry Pi con múltiples capacidades de detección y control autónomo desarrollado para el Programa Delfín 2025.
 
-## Project Structure
+Su propósito principal es permitir ayudar con la carga de alimento, grano, agua y otros suministros a los animales de la granja o sembradíos, mientras va siguiendo a un persona o en su defecto siguiendo una ruta preestablecida, evitando obstáculos y detectando marcadores ArUco para navegación precisa.
+
+## 📋 Tabla de Contenidos
+
+- [Descripción General](#descripción-general)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Requisitos del Sistema](#requisitos-del-sistema)
+- [Instalación](#instalación)
+- [Configuración](#configuración)
+- [Uso](#uso)
+- [Módulos del Sistema](#módulos-del-sistema)
+- [Pruebas](#pruebas)
+- [Solución de Problemas](#solución-de-problemas)
+- [Contribución](#contribución)
+- [Licencia](#licencia)
+
+## 🚗 Descripción General
+
+Este proyecto implementa un sistema de navegación autónoma para un carro Raspberry Pi con múltiples capacidades:
+
+- **Detección de ArUco markers** con procesamiento concurrente
+- **Detección de líneas de colores** (secuencial y concurrente)
+- **Detección de personas** con procesamiento concurrente
+- **Control de motores** y navegación
+- **Integración con Intel RealSense** para visión 3D
+- **Interfaz X11** para visualización
+
+## 📁 Estructura del Proyecto
 
 ```
-raspberry-pi-car
-├── src
-│   ├── camera
-│   │   ├── __init__.py
-│   │   ├── camera_manager.py
-│   │   └── image_processor.py
-│   ├── control
-│   │   ├── __init__.py
-│   │   ├── car_controller.py
-│   │   └── motor_driver.py
-│   ├── sensors
-│   │   ├── __init__.py
-│   │   └── distance_sensor.py
-│   ├── utils
-│   │   ├── __init__.py
-│   │   └── thread_safe_data.py
-│   ├── __init__.py
-│   └── main.py
-├── tests
-│   ├── __init__.py
-│   ├── test_camera.py
-│   ├── test_control.py
-│   └── test_utils.py
-├── config
-│   └── settings.json
-├── scripts
-│   ├── install_dependencies.sh
-│   └── start_on_boot.sh
-├── requirements.txt
-└── README.md
+ProgramaDelfin2025/
+├── arucos/                                    # Marcadores ArUco y utilidades
+│   ├── aruco_marker_*.png                    # Marcadores ArUco generados
+│   └── arucos.py                             # Utilidades para ArUco
+├── detección_de_arucos_de_color_concurrente/  # Detección ArUco con threading
+│   ├── src/                                  # Código fuente principal
+│   ├── tests/                                # Pruebas unitarias
+│   ├── config/                               # Configuraciones
+│   ├── scripts/                              # Scripts de instalación
+│   └── README.md                             # Documentación específica
+├── detección_de_linea_de_color_concurrente/   # Detección de líneas (concurrente)
+├── detección_de_linea_de_color_secuencial/    # Detección de líneas (secuencial)
+├── detección_de_personas_concurrente/         # Detección de personas con threading
+├── pruebas_individuales/                      # Pruebas y experimentos
+├── raspberry-pi-car/                          # Implementación base del carro
+├── robot_env_new/                             # Entorno RealSense y dependencias
+│   ├── include/                              # Headers de librealsense2
+│   ├── lib/                                  # Librerías compiladas
+│   └── bin/                                  # Ejecutables
+├── test_x11.py                               # Pruebas de interfaz X11
+└── README.md                                 # Este archivo
 ```
 
-## Installation
+## 🔧 Requisitos del Sistema
 
-1. Clone the repository:
-   ```
-   git clone <repository-url>
-   cd raspberry-pi-car
-   ```
+### Hardware
+- **Raspberry Pi 4** (recomendado) o superior
+- **Cámara Intel RealSense** (D435i/D455)
+- **Motores DC** con controladores
+- **Sensores ultrasónicos** para detección de obstáculos (temporalmente desabilitado para este proyecto)
+- **Tarjeta microSD** (32GB mínimo)
 
-2. Install the required dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+### Software
+- **Raspberry Pi OS** (64-bit recomendado)
+- **Python 3.11+**
+- **OpenCV 4.7+**
+- **librealsense2** (instalar repecto al sistema operativo que se use)
+- **X11** para interfaz gráfica
 
-3. Run the installation script to set up any additional dependencies:
-   ```
-   ./scripts/install_dependencies.sh
-   ```
-
-## Usage
-
-To start the car control and camera processing, run the main application:
+### Dependencias Python
+```bash
+# Principales dependencias
+opencv-python>=4.5.0
+numpy>=1.21.0
+pyrealsense2>=2.55.1 (checar Warning)
+threading
+concurrent.futures
 ```
+> [!WARNING]
+> tener cuidado con la libreria pyrealsense ya que depende del sistema operativo, su manera de instalar
+
+
+## 🚀 Instalación
+
+### 1. Instalación Automática (Recomendado) (compatible solo con raspberry pi 4)
+
+Cada módulo incluye un script de instalación automatizada:
+
+```bash
+# Para detección de ArUco
+cd detección_de_arucos_de_color_concurrente/
+chmod +x scripts/install_dependencies.sh
+./scripts/install_dependencies.sh
+
+# Para detección de personas
+cd detección_de_personas_concurrente/
+chmod +x scripts/install_dependencies.sh
+./scripts/install_dependencies.sh
+```
+
+### 3. Configuración de Permisos USB
+
+```bash
+# Configurar permisos para RealSense
+sudo cp robot_env_new/config/99-realsense-libusb.rules /etc/udev/rules.d/
+sudo udevadm control --reload-rules
+sudo udevadm trigger
+```
+
+## ⚙️ Configuración
+
+### Configuración Principal
+
+Cada módulo tiene su archivo de configuración en `config/settings.json`:
+
+```json
+{
+  "camera": {
+    "resolution": [640, 480],
+    "fps": 30,
+    "format": "RGB8"
+  },
+  "detection": {
+    "confidence_threshold": 0.7,
+    "nms_threshold": 0.4
+  },
+  "motors": {
+    "speed": 50,
+    "turn_speed": 30
+  }
+}
+```
+
+> [!NOTE]
+> Considere que las configuración depende de la camara que utilice
+
+### Variables de Entorno
+
+ejecutar el start_on_boot.sh para configurar las variables de entorno necesarias
+
+> [!Caution]
+> Solo compatible con la funcionalidad de detección de ArUco
+
+
+
+## 🎯 Uso
+
+### Ejecución de Módulos Individuales
+
+```bash
+# Detección de ArUco
+cd detección_de_arucos_de_color_concurrente/
+python src/main.py
+
+# Detección de personas
+cd detección_de_personas_concurrente/
+python src/main.py
+
+# Detección de líneas (concurrente)
+cd detección_de_linea_de_color_concurrente/
 python src/main.py
 ```
 
-## Components
+## 🧩 Módulos del Sistema
 
-- **Camera Module**: Handles camera initialization and streaming.
-  - `CameraManager`: Manages camera operations.
-  - `ImageProcessor`: Processes images captured by the camera.
+### 1. Detección de ArUco Markers
+- **Ubicación**: `detección_de_arucos_de_color_concurrente/`
+- **Funcionalidad**: Detección y reconocimiento de marcadores ArUco
+- **Procesamiento**: Concurrente con threading
+- **Uso**: Navegación y posicionamiento
 
-- **Control Module**: Manages car movement.
-  - `CarController`: Controls the car's movement.
-  - `MotorDriver`: Interfaces with the motor hardware.
+### 2. Detección de Líneas de Color
+- **Secuencial**: `detección_de_linea_de_color_secuencial/`
+- **Concurrente**: `detección_de_linea_de_color_concurrente/`
+- **Funcionalidad**: Seguimiento de líneas de colores
+- **Algoritmos**: Filtrado HSV, detección de contornos
 
-- **Sensors Module**: Measures distance and detects obstacles.
-  - `DistanceSensor`: Provides distance measurements.
+### 3. Detección de Personas
+- **Ubicación**: `detección_de_personas_concurrente/`
+- **Funcionalidad**: Detección y seguimiento de personas
+- **Tecnología**: YOLO/HOG + SVM con threading
+- **Aplicación**: Navegación segura y evitación de obstáculos
 
-- **Utils Module**: Contains utility functions and classes.
-  - `ThreadSafeData`: Provides thread-safe data storage.
+### 4. Control de Motores
+- **Ubicación**: `raspberry-pi-car/`
+- **Funcionalidad**: Control de movimiento del carro
+- **Características**: PWM, control de velocidad, giros
 
-## Testing
+### 5. Integración RealSense
+- **Ubicación**: `robot_env_new/`
+- **Funcionalidad**: Manejo de cámara Intel RealSense
+- **Características**: Visión 3D, mapeo de profundidad
 
-To run the tests for the project, use the following command:
+## 🧪 Pruebas
+
+### Ejecución de Pruebas
+
+```bash
+# Pruebas específicas por módulo
+cd [módulo]/tests/
+python -m pytest test_*.py -v
+
+# Pruebas de integración
+python -m pytest tests/ -v --cov=src/
 ```
-pytest tests/
+
+### Pruebas Individuales
+
+```bash
+# Probar cámara
+python test_x11.py
+
+# Pruebas específicas
+cd pruebas_individuales/
+python [test_específico].py
 ```
 
-## Contributing
+## 🔧 Solución de Problemas
 
-Contributions are welcome! Please open an issue or submit a pull request for any improvements or bug fixes.
+### Problemas Comunes
 
-## License
+#### Error de Permisos USB
+```bash
+# Verificar permisos
+lsusb
+sudo usermod -a -G video $USER
+# Reiniciar sesión
+```
 
-This project is licensed under the MIT License. See the LICENSE file for details.
+#### Error de Memoria Insuficiente
+```bash
+# Aumentar swap
+sudo dphys-swapfile swapoff
+sudo nano /etc/dphys-swapfile
+# CONF_SWAPSIZE=2048
+sudo dphys-swapfile setup
+sudo dphys-swapfile swapon
+```
+
+#### Error de Dependencias
+```bash
+# Reinstalar dependencias
+pip install --upgrade --force-reinstall -r requirements.txt
+```
+
+### Logs y Depuración
+
+```bash
+# Activar modo debug
+export DEBUG=1
+python src/main.py
+
+# Ver logs del sistema
+journalctl -u [servicio] -f
+```
+
+## 🤝 Contribución
+
+1. **Fork** el proyecto
+2. **Crea** una rama para tu feature (`git checkout -b feature/AmazingFeature`)
+3. **Commit** tus cambios (`git commit -m 'Add some AmazingFeature'`)
+4. **Push** a la rama (`git push origin feature/AmazingFeature`)
+5. **Abre** un Pull Request
+
+### Estándares de Código
+
+- **PEP 8** para Python
+- **Docstrings** en todas las funciones
+- **Type hints** cuando sea posible
+- **Pruebas unitarias** para nuevas funcionalidades
+
+## 📄 Licencia
+
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+
+---
+
+## 📞 Soporte
+
+Para soporte técnico o preguntas:
+
+- **Email**: amurillob2000@alumno.ipn.mx
+- **Issues**: https://github.com/AlexisInsMu/ProgramaDelfin2025/issues
+- **Wiki**: https://github.com/AlexisInsMu/ProgramaDelfin2025/wiki
+
+---
+
+**Programa Delfín 2025** - Desarrollado en el IPN y Tecnologico Nacional de México de Tuxtla Gutiérrez
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
