@@ -102,6 +102,9 @@ chmod +x scripts/install_dependencies.sh
 ./scripts/install_dependencies.sh
 ```
 
+> [!Caution]
+> Solo compatible con la funcionalidad de detección de ArUco
+
 ### 3. Configuración de Permisos USB
 
 ```bash
