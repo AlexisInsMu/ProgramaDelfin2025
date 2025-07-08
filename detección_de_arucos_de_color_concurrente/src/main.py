@@ -15,6 +15,7 @@ from src.utils.thread_safe_data import ThreadSafeData
 from src.camera.camera_manager import CameraManager
 from src.camera.image_processor import ImageProcessor
 from src.control.car_controller import CarController
+from src.sensors.distance_sensor import DistanceSensor  # ← Nueva importación
 import numpy as np
 
 SHOW_WINDOWS ={
@@ -47,17 +48,23 @@ def main():
     camera = CameraManager(shared_data, resolution=(600, 500))
     processor = ImageProcessor(shared_data)
     controller = CarController(shared_data)
+    distance_sensor = DistanceSensor()  # ← Nuevo sensor de distancia
     
-    # Iniciar todos los hilos
+    # Iniciar todos los hilos y sensores
     if not camera.start_stream():
         print("Error al iniciar la cámara. Abortando.")
         return
-        
+    
+    if not distance_sensor.start_streaming():
+        print("Error al iniciar el sensor de distancia. Continuando sin él.")
+        distance_sensor = None
+    
     processor.start()
     controller.start()
     
     print("Sistema iniciado - Presione 'q' para salir")
-     #Crear y configurar ventanas una sola vez
+    
+    # Crear y configurar ventanas una sola vez
     if SHOW_WINDOWS['camera']:
         cv2.namedWindow("Cámara", cv2.WINDOW_NORMAL)
     if SHOW_WINDOWS['processed']:
@@ -76,6 +83,17 @@ def main():
             largest_area = shared_data.get_data('largest_aruco_area', 0)
             alto = shared_data.get_data('alto', False)
             position = shared_data.get_data('position', "Unknown")
+            
+            # ← Obtener datos del sensor de distancia
+            if distance_sensor:
+                distance_center = distance_sensor.get_distance_center()
+                obstacle_detected = distance_sensor.is_obstacle_detected(threshold=0.5)
+                closest_obstacle = distance_sensor.get_closest_obstacle()
+                
+                # Compartir datos de distancia
+                shared_data.set_data('distance_center', distance_center)
+                shared_data.set_data('obstacle_detected', obstacle_detected)
+                shared_data.set_data('closest_obstacle', closest_obstacle)
             
             # Mostrar ventanas
             if SHOW_WINDOWS['camera'] and frame is not None:
@@ -113,6 +131,22 @@ def main():
                     cv2.putText(debug_frame, "No ArUcos detectados", (10, 30), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
                 
+                # ← Mostrar información de distancia
+                if distance_sensor:
+                    y_offset = 150
+                    cv2.putText(debug_frame, f"Distancia Centro: {distance_center:.2f}m", (10, y_offset), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 0), 2)
+                    
+                    obstacle_color = (0, 0, 255) if obstacle_detected else (0, 255, 0)
+                    obstacle_text = "OBSTACULO!" if obstacle_detected else "Camino libre"
+                    cv2.putText(debug_frame, obstacle_text, (10, y_offset + 25), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, obstacle_color, 2)
+                    
+                    if closest_obstacle:
+                        dist, x, y = closest_obstacle
+                        cv2.putText(debug_frame, f"Mas cercano: {dist:.2f}m", (10, y_offset + 50), 
+                                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
+                
                 # Mostrar posición del control
                 cv2.putText(debug_frame, f"Control: {position}", (10, 120), 
                             cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
@@ -132,6 +166,8 @@ def main():
         controller.stop()
         processor.stop()
         camera.stop_stream()
+        if distance_sensor:
+            distance_sensor.stop_streaming()
         cv2.destroyAllWindows()
         print("Sistema detenido correctamente")
 
