@@ -48,7 +48,7 @@ ProgramaDelfin2025/
 ├── pruebas_individuales/                      # Pruebas y experimentos
 ├── raspberry-pi-car/                          # Implementación base del carro
 ├── robot_env_new/                             # Entorno RealSense y dependencias
-│   ├── include/                              # Headers de librealsense2
+│   ├── include/                              # Headers de librealsense2 y otras librerías
 │   ├── lib/                                  # Librerías compiladas
 │   └── bin/                                  # Ejecutables
 ├── test_x11.py                               # Pruebas de interfaz X11
