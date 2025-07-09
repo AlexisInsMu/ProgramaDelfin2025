@@ -3,8 +3,7 @@ import time
 import sys
 import os
 
-# Configurar backend de OpenCV para evitar problemas con Qt y OpenGL
-import os
+# Configurar backend de OpenCV
 os.environ['QT_QPA_PLATFORM'] = 'xcb'
 os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
 
@@ -15,54 +14,67 @@ from src.utils.thread_safe_data import ThreadSafeData
 from src.camera.camera_manager import CameraManager
 from src.camera.image_processor import ImageProcessor
 from src.control.car_controller import CarController
-from src.sensors.distance_sensor import DistanceSensor  # ← Nueva importación
+
+# Importar DistanceSensor con manejo de errores
+distance_sensor = None
+try:
+    from src.sensors.distance_sensor import DistanceSensor
+    print("✓ DistanceSensor importado correctamente")
+    
+    # Probar crear instancia
+    distance_sensor = DistanceSensor()
+    print("✓ DistanceSensor creado correctamente")
+except ImportError as e:
+    print(f"❌ Error importando DistanceSensor: {e}")
+    print("Continuando sin sensor de distancia")
+except AttributeError as e:
+    print(f"❌ Error de atributo en pyrealsense2: {e}")
+    print("Verificar configuración de variables de entorno")
+    print("Continuando sin sensor de distancia")
+except Exception as e:
+    print(f"❌ Error inesperado: {e}")
+    print("Continuando sin sensor de distancia")
+
 import numpy as np
 
-SHOW_WINDOWS ={
-    'camera': True,       # Imagen original de la cámara
-    'processed': True,    # Imagen procesada con visualizaciones
-    'debug': True         # Información adicional de depuración
-}
-
 def main():
-    # Objeto para compartir datos entre hilos
+    # Resto del código permanece igual...
     shared_data = ThreadSafeData()
     
-    # Verificar si podemos usar ventanas GUI
+    # Verificar GUI
     try:
-        # Intentar crear una ventana de prueba
         test_img = np.zeros((100, 100, 3), dtype=np.uint8)
         cv2.imshow("Test", test_img)
         cv2.waitKey(1)
         cv2.destroyWindow("Test")
         print("GUI disponible - Mostrando ventanas")
-        gui_available = True
     except:
         print("GUI no disponible - Ejecutando sin ventanas")
-        gui_available = False
-        # Desactivar todas las ventanas si GUI no está disponible
-        for key in SHOW_WINDOWS:
-            SHOW_WINDOWS[key] = False
     
-    # Inicializar componentes
+    # Inicializar componentes básicos
     camera = CameraManager(shared_data, resolution=(600, 500))
     processor = ImageProcessor(shared_data)
     controller = CarController(shared_data)
-    distance_sensor = DistanceSensor()  # ← Nuevo sensor de distancia
     
-    # Iniciar todos los hilos y sensores
+    # Iniciar componentes básicos
     if not camera.start_stream():
         print("Error al iniciar la cámara. Abortando.")
         return
     
-    if not distance_sensor.start_streaming():
-        print("Error al iniciar el sensor de distancia. Continuando sin él.")
-        distance_sensor = None
+    # Iniciar sensor de distancia solo si está disponible
+    if distance_sensor:
+        try:
+            if distance_sensor.start_streaming():
+                print("✓ Sensor de distancia iniciado")
+            else:
+                print("⚠ Error iniciando sensor de distancia")
+                distance_sensor = None
+        except Exception as e:
+            print(f"⚠ Error en start_streaming: {e}")
+            distance_sensor = None
     
     processor.start()
     controller.start()
-    
-    print("Sistema iniciado - Presione 'q' para salir")
     
     # Crear y configurar ventanas una sola vez
     if SHOW_WINDOWS['camera']:

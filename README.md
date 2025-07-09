@@ -1,6 +1,4 @@
-# Raspberry Pi Car Project
-
-This project is a Raspberry Pi-based car that utilizes threading for camera processing and car control. The car is equipped with a camera for streaming and image processing, as well as sensors for obstacle detection.
+# Programa Delfín 2025
 
 ## Project Structure
 
