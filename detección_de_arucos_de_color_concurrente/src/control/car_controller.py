@@ -4,11 +4,12 @@ import time
 
 class CarController:
 
-    def __init__(self, shared_data):
+    def __init__(self, shared_data, distance_sensor=None):  # ← Agregar parámetro opcional
         self.car = YB_Pcb_Car()
         self.running = True
         self.thread = Thread(target=self.control_loop)
         self.shared_data = shared_data
+        self.distance_sensor = distance_sensor  # ← Agregar esta línea
         self.thread.daemon = True 
         
     def start(self):
@@ -21,7 +22,7 @@ class CarController:
             alto = self.shared_data.get_data('alto', False)
             image_center_x = self.shared_data.get_data('center_x', 300)  # Centro de imagen por defecto
             
-            # ← Obtener datos del sensor de distancia
+            # Obtener datos del sensor de distancia
             obstacle_detected = self.shared_data.get_data('obstacle_detected', False)
             distance_center = self.shared_data.get_data('distance_center', 0.0)
             
@@ -85,18 +86,19 @@ class CarController:
             time.sleep(0.05)
 
     def move_forward(self, speed):
-        pass
+        self.car.Car_Run(speed, speed)
 
     def move_backward(self, speed):
-        pass
+        self.car.Car_Back(speed, speed)
 
     def turn_left(self, speed):
-        pass
+        self.car.Car_Left(speed, speed)
 
     def turn_right(self, speed):
-        pass
+        self.car.Car_Right(speed, speed)
 
     def stop(self):
         self.car.Car_Stop()
         self.running = False
-        self.thread.join(timeout=1.0)  # Wait for the control loop to finish
+        if hasattr(self, 'thread') and self.thread.is_alive():
+            self.thread.join(timeout=1.0)
