@@ -10,3 +10,9 @@ arucos/arucos_pdf.pdf
 4.8.0.76
 # venv
 robot/
+venv_*/
+# CMake build files
+build/
+CMakeCache.txt
+CMakeFiles/
+Makefile

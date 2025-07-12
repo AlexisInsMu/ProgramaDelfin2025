@@ -1,8 +1,8 @@
-import cv2 as cv  # Change this to match the import convention in your file
+import cv2 as cv  
 import numpy as np
 from threading import Thread, Lock
 import time
-from src.utils.thread_safe_data import ThreadSafeData  # Changed from relative to absolute import    
+from src.utils.thread_safe_data import ThreadSafeData
     
 class Aruco_Detector:
     def __init__(self):
@@ -33,12 +33,13 @@ class Aruco_Detector:
         
         
 class ImageProcessor:
-    def __init__(self, shared_data):
+    def __init__(self, shared_data, use_new_aruco_api=False):  # ← Agregar parámetro
         self.aruco_detector = Aruco_Detector()
         self.shared_data = shared_data
         self.running = False
         self.lock = Lock()
         self.processed_frame = None
+        self.use_new_aruco_api = use_new_aruco_api  # ← Agregar esta línea
         
     def start(self):
         self.running = True
@@ -86,7 +87,7 @@ class ImageProcessor:
                                 
                                 # Determinar si el ArUco es lo suficientemente grande para detenerse
                                 image_area = frame.shape[0] * frame.shape[1]  # 500 * 600
-                                if area > image_area / 80:  # Mayor a 1/15 del área de imagen
+                                if area > image_area / 80:  # Mayor a 1/80 del área de imagen
                                     alto = True
                     
                     # Guardar datos compartidos
@@ -102,6 +103,38 @@ class ImageProcessor:
     def get_processed_image(self):
         with self.lock:
             return self.processed_frame.copy() if self.processed_frame is not None else None
+    
+    def process_frame(self, frame):  # ← Agregar método faltante
+        """Procesar un frame individual (para compatibilidad)"""
+        if frame is None:
+            return None
+            
+        with self.lock:
+            # Detectar ArUcos
+            corners, ids = self.aruco_detector.detect_aruco(frame)
+            
+            # Crear frame procesado
+            processed_frame = frame.copy()
+            
+            if ids is not None and len(ids) > 0:
+                cv.aruco.drawDetectedMarkers(processed_frame, corners, ids)
+                
+                # Dibujar información adicional
+                for i, corner in enumerate(corners):
+                    corner_points = corner.reshape((4, 2))
+                    center_x = int(np.mean(corner_points[:, 0]))
+                    center_y = int(np.mean(corner_points[:, 1]))
+                    
+                    # Dibujar centro
+                    cv.circle(processed_frame, (center_x, center_y), 5, (0, 255, 0), -1)
+                    
+                    # Dibujar ID
+                    if ids is not None and i < len(ids):
+                        cv.putText(processed_frame, f"ID: {ids[i][0]}", 
+                                  (center_x - 20, center_y - 20), 
+                                  cv.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0), 2)
+            
+            return processed_frame
             
     def stop(self):
         self.running = False

@@ -1,77 +1,87 @@
-sudo apt-get install automake libtool vim cmake libusb-1.0-0-dev libx11-dev xorg-dev libglu1-mesa-dev
-Obj:1 http://deb.debian.org/debian bookworm InRelease
-Obj:2 http://deb.debian.org/debian-security bookworm-security InRelease
-Des:3 http://deb.debian.org/debian bookworm-updates InRelease [55.4 kB]
-Obj:4 http://archive.raspberrypi.org/debian bullseye InRelease             
-Descargados 55.4 kB en 1s (38.0 kB/s)
-Leyendo lista de paquetes... Hecho
-Leyendo lista de paquetes... Hecho
-Creando árbol de dependencias... Hecho
-Leyendo la información de estado... Hecho
-Calculando la actualización... Hecho
-Los paquetes indicados a continuación se instalaron de forma automática y ya no son necesarios.
-  libbasicusageenvironment1 libgroupsock8 liblivemedia77
-  linux-headers-6.6.31+rpt-common-rpi linux-headers-6.6.31+rpt-rpi-2712
-  linux-headers-6.6.31+rpt-rpi-v8 linux-image-6.6.31+rpt-rpi-2712
-  linux-image-6.6.31+rpt-rpi-v8 linux-kbuild-6.6.31+rpt
-Utilice «sudo apt autoremove» para eliminarlos.
-Se actualizarán los siguientes paquetes:
-  gir1.2-gtk-2.0 gtk2-engines-pixbuf libgtk2.0-0 libgtk2.0-bin
-  libgtk2.0-common libgtk2.0-dev
-6 actualizados, 0 nuevos se instalarán, 0 para eliminar y 0 no actualizados.
-Se necesita descargar 5 563 kB de archivos.
-Se liberarán 982 kB después de esta operación.
-¿Desea continuar? [S/n] s
-Des:1 http://archive.raspberrypi.org/debian bullseye/main arm64 libgtk2.0-common all 2.24.33-2+rpt2+deb11u1 [2 700 kB]
-Des:2 http://archive.raspberrypi.org/debian bullseye/main arm64 libgtk2.0-bin arm64 2.24.33-2+rpt2+deb11u1 [50.9 kB]
-Des:3 http://archive.raspberrypi.org/debian bullseye/main arm64 libgtk2.0-dev arm64 2.24.33-2+rpt2+deb11u1 [827 kB]
-Des:4 http://archive.raspberrypi.org/debian bullseye/main arm64 libgtk2.0-0 arm64 2.24.33-2+rpt2+deb11u1 [1 708 kB]
-Des:5 http://archive.raspberrypi.org/debian bullseye/main arm64 gir1.2-gtk-2.0 arm64 2.24.33-2+rpt2+deb11u1 [216 kB]
-Des:6 http://archive.raspberrypi.org/debian bullseye/main arm64 gtk2-engines-pixbuf arm64 2.24.33-2+rpt2+deb11u1 [61.9 kB]
-Descargados 5 563 kB en 3s (2 161 kB/s)        
-Leyendo lista de cambios... Hecho.
-(Leyendo la base de datos ... 202674 ficheros o directorios instalados actualmente.)
-Preparando para desempaquetar .../0-libgtk2.0-common_2.24.33-2+rpt2+deb11u1_all.deb ...
-Desempaquetando libgtk2.0-common (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Preparando para desempaquetar .../1-libgtk2.0-bin_2.24.33-2+rpt2+deb11u1_arm64.deb ...
-Desempaquetando libgtk2.0-bin (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Preparando para desempaquetar .../2-libgtk2.0-dev_2.24.33-2+rpt2+deb11u1_arm64.deb ...
-Desempaquetando libgtk2.0-dev:arm64 (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Preparando para desempaquetar .../3-libgtk2.0-0_2.24.33-2+rpt2+deb11u1_arm64.deb ...
-Desempaquetando libgtk2.0-0:arm64 (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Preparando para desempaquetar .../4-gir1.2-gtk-2.0_2.24.33-2+rpt2+deb11u1_arm64.deb ...
-Desempaquetando gir1.2-gtk-2.0:arm64 (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Preparando para desempaquetar .../5-gtk2-engines-pixbuf_2.24.33-2+rpt2+deb11u1_arm64.deb ...
-Desempaquetando gtk2-engines-pixbuf:arm64 (2.24.33-2+rpt2+deb11u1) sobre (2.24.33-2+rpt1+deb12u1) ...
-Configurando gtk2-engines-pixbuf:arm64 (2.24.33-2+rpt2+deb11u1) ...
-Configurando libgtk2.0-common (2.24.33-2+rpt2+deb11u1) ...
-Configurando libgtk2.0-0:arm64 (2.24.33-2+rpt2+deb11u1) ...
-Configurando gir1.2-gtk-2.0:arm64 (2.24.33-2+rpt2+deb11u1) ...
-Configurando libgtk2.0-bin (2.24.33-2+rpt2+deb11u1) ...
-Configurando libgtk2.0-dev:arm64 (2.24.33-2+rpt2+deb11u1) ...
-Procesando disparadores para man-db (2.11.2-2) ...
-Procesando disparadores para libc-bin (2.36-9+rpt2+deb12u12) ...
-Leyendo lista de paquetes... Hecho
-Creando árbol de dependencias... Hecho
-Leyendo la información de estado... Hecho
-automake ya está en su versión más reciente (1:1.16.5-1.3).
-fijado automake como instalado manualmente.
-libtool ya está en su versión más reciente (2.4.7-7~deb12u1).
-fijado libtool como instalado manualmente.
-cmake ya está en su versión más reciente (3.25.1-1).
-libusb-1.0-0-dev ya está en su versión más reciente (2:1.0.26-1).
-libx11-dev ya está en su versión más reciente (2:1.8.4-2+deb12u2).
-fijado libx11-dev como instalado manualmente.
-libglu1-mesa-dev ya está en su versión más reciente (9.0.2-1.1).
-No se pudieron instalar algunos paquetes. Esto puede significar que
-usted pidió una situación imposible o, si está usando la distribución
-inestable, que algunos paquetes necesarios aún no se han creado o se
-han sacado de «Incoming».
-La siguiente información puede ayudar a resolver la situación:
-
-Los siguientes paquetes tienen dependencias incumplidas:
- libdrm-dev : Depende: libdrm2 (= 2.4.114-1+b1) pero 2.4.123-1~bpo12+1+rpt1 va a ser instalado
-              Depende: libdrm-radeon1 (= 2.4.114-1+b1) pero 2.4.123-1~bpo12+1+rpt1 va a ser instalado
-              Depende: libdrm-nouveau2 (= 2.4.114-1+b1) pero 2.4.123-1~bpo12+1+rpt1 va a ser instalado
-              Depende: libdrm-amdgpu1 (= 2.4.114-1+b1) pero 2.4.123-1~bpo12+1+rpt1 va a ser instalado
-E: No se pudieron corregir los problemas, usted ha retenido paquetes rotos.
+to-date: /usr/local/lib/cmake/pyrealsense2/pyrealsense2Config.cmake
+-- Up-to-date: /usr/local/lib/cmake/pyrealsense2/pyrealsense2ConfigVersion.cmake
+-- Installing: /usr/local/lib/librealsense2-gl.so.2.55.1
+-- Up-to-date: /usr/local/lib/librealsense2-gl.so.2.55
+-- Set runtime path of "/usr/local/lib/librealsense2-gl.so.2.55.1" to ""
+-- Up-to-date: /usr/local/lib/librealsense2-gl.so
+-- Up-to-date: /usr/local/include/librealsense2-gl/rs_processing_gl.h
+-- Up-to-date: /usr/local/include/librealsense2-gl/rs_processing_gl.hpp
+-- Up-to-date: /usr/local/lib/cmake/realsense2-gl/realsense2-glTargets.cmake
+-- Up-to-date: /usr/local/lib/cmake/realsense2-gl/realsense2-glTargets-release.cmake
+-- Up-to-date: /usr/local/lib/cmake/realsense2-gl/realsense2-glConfig.cmake
+-- Up-to-date: /usr/local/lib/cmake/realsense2-gl/realsense2-glConfigVersion.cmake
+-- Up-to-date: /usr/local/lib/pkgconfig/realsense2-gl.pc
+-- Installing: /usr/local/bin/rs-hello-realsense
+-- Set runtime path of "/usr/local/bin/rs-hello-realsense" to ""
+-- Installing: /usr/local/bin/rs-software-device
+-- Set runtime path of "/usr/local/bin/rs-software-device" to ""
+-- Installing: /usr/local/bin/rs-capture
+-- Set runtime path of "/usr/local/bin/rs-capture" to ""
+-- Installing: /usr/local/bin/rs-callback
+-- Set runtime path of "/usr/local/bin/rs-callback" to ""
+-- Installing: /usr/local/bin/rs-save-to-disk
+-- Set runtime path of "/usr/local/bin/rs-save-to-disk" to ""
+-- Installing: /usr/local/bin/rs-multicam
+-- Set runtime path of "/usr/local/bin/rs-multicam" to ""
+-- Installing: /usr/local/bin/rs-pointcloud
+-- Set runtime path of "/usr/local/bin/rs-pointcloud" to ""
+-- Installing: /usr/local/bin/rs-align
+-- Set runtime path of "/usr/local/bin/rs-align" to ""
+-- Installing: /usr/local/bin/rs-align-gl
+-- Set runtime path of "/usr/local/bin/rs-align-gl" to ""
+-- Installing: /usr/local/bin/rs-align-advanced
+-- Set runtime path of "/usr/local/bin/rs-align-advanced" to ""
+-- Installing: /usr/local/bin/rs-sensor-control
+-- Set runtime path of "/usr/local/bin/rs-sensor-control" to ""
+-- Installing: /usr/local/bin/rs-measure
+-- Set runtime path of "/usr/local/bin/rs-measure" to ""
+-- Installing: /usr/local/bin/rs-depth
+-- Set runtime path of "/usr/local/bin/rs-depth" to ""
+-- Installing: /usr/local/bin/rs-color
+-- Set runtime path of "/usr/local/bin/rs-color" to ""
+-- Installing: /usr/local/bin/rs-distance
+-- Set runtime path of "/usr/local/bin/rs-distance" to ""
+-- Installing: /usr/local/bin/rs-post-processing
+-- Set runtime path of "/usr/local/bin/rs-post-processing" to ""
+-- Installing: /usr/local/bin/rs-record-playback
+-- Set runtime path of "/usr/local/bin/rs-record-playback" to ""
+-- Installing: /usr/local/bin/rs-motion
+-- Set runtime path of "/usr/local/bin/rs-motion" to ""
+-- Installing: /usr/local/bin/rs-gl
+-- Set runtime path of "/usr/local/bin/rs-gl" to ""
+-- Installing: /usr/local/bin/rs-hdr
+-- Set runtime path of "/usr/local/bin/rs-hdr" to ""
+-- Installing: /usr/local/bin/rs-convert
+-- Set runtime path of "/usr/local/bin/rs-convert" to ""
+-- Installing: /usr/local/bin/rs-enumerate-devices
+-- Set runtime path of "/usr/local/bin/rs-enumerate-devices" to ""
+-- Installing: /usr/local/bin/rs-fw-logger
+-- Set runtime path of "/usr/local/bin/rs-fw-logger" to ""
+-- Installing: /usr/local/bin/rs-terminal
+-- Set runtime path of "/usr/local/bin/rs-terminal" to ""
+-- Installing: /usr/local/bin/rs-record
+-- Set runtime path of "/usr/local/bin/rs-record" to ""
+-- Installing: /usr/local/bin/rs-fw-update
+-- Set runtime path of "/usr/local/bin/rs-fw-update" to ""
+-- Installing: /usr/local/bin/rs-embed
+-- Installing: /usr/local/bin/rs-data-collect
+-- Set runtime path of "/usr/local/bin/rs-data-collect" to ""
+-- Installing: /usr/local/bin/realsense-viewer
+-- Set runtime path of "/usr/local/bin/realsense-viewer" to ""
+-- Up-to-date: /home/pi/Documents/librealsense2/presets
+-- Up-to-date: /home/pi/Documents/librealsense2/presets/sample.preset
+-- Installing: /usr/local/bin/rs-depth-quality
+-- Set runtime path of "/usr/local/bin/rs-depth-quality" to ""
+-- Installing: /usr/local/bin/rs-rosbag-inspector
+-- Set runtime path of "/usr/local/bin/rs-rosbag-inspector" to ""
+-- Installing: /usr/local/bin/rs-benchmark
+-- Set runtime path of "/usr/local/bin/rs-benchmark" to ""
+-- Installing: /usr/local/lib/libfw.a
+python: can't open file '/home/pi/librealsense/build/wrappers/python/setup.py': [Errno 2] No such file or directory
+python: can't open file '/home/pi/librealsense/build/wrappers/python/setup.py': [Errno 2] No such file or directory
+[INFO] Probando pyrealsense2...
+Traceback (most recent call last):
+  File "<string>", line 2, in <module>
+ModuleNotFoundError: No module named 'pyrealsense2'
+[INFO] ¡Configuración completada!
+Para activar el ambiente, ejecuta: source activate_py39_realsense.sh
