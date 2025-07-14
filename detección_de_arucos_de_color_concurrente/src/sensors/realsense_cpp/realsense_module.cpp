@@ -19,6 +19,7 @@ private:
     rs2::frameset frames;
     // Cambiar de rs2::depth_frame a un puntero opcional
     std::unique_ptr<rs2::depth_frame> current_depth_frame;
+    std::unique_ptr<rs2::video_frame> current_color_frame;
     
     std::mutex frame_mutex;
     std::atomic<bool> is_streaming{false};
@@ -37,6 +38,7 @@ private:
             try {
                 auto frames = pipeline.wait_for_frames(1000);
                 auto depth = frames.get_depth_frame();
+                auto color = frames.get_color_frame();
                 
                 if (depth) {
                     // Aplicar filtros
@@ -46,6 +48,10 @@ private:
                     
                     std::lock_guard<std::mutex> lock(frame_mutex);
                     current_depth_frame = std::make_unique<rs2::depth_frame>(depth);
+                }
+                if(color){
+                    std::lock_guard<std::mutex> lock(frame_mutex);
+                    current_color_frame = std::make_unique<rs2::video_frame>(color);
                 }
             } catch (const rs2::error& e) {
                 std::cerr << "RealSense error: " << e.what() << std::endl;
@@ -78,6 +84,7 @@ public:
             
             // Configurar stream
             config.enable_stream(RS2_STREAM_DEPTH, width, height, RS2_FORMAT_Z16, fps);
+            config.enable_stream(RS2_STREAM_COLOR, width, height, RS2_FORMAT_RGB8, fps);
             
             // Iniciar pipeline
             auto profile = pipeline.start(config);
@@ -210,6 +217,42 @@ public:
         return result;
     }
     
+    // capturar la imagen de profundidad actual
+    pybind11::array_t<uint16_t> get_current_depth_image() {
+        std::lock_guard<std::mutex> lock(frame_mutex);
+        if (!current_depth_frame) {
+            return pybind11::array_t<uint16_t>();
+        }
+        auto result = pybind11::array_t<uint16_t>({height, width});
+        auto buf = result.request();
+        uint16_t* ptr = static_cast<uint16_t*>(buf.ptr);
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                ptr[y * width + x] = static_cast<uint16_t>(current_depth_frame->get_distance(x, y) / depth_scale);
+            }
+        }
+        return result;
+    }
+
+    pybind11::array_t<uint8_t> get_image_rgb(){
+        std::lock_guard<std::mutex> lock(frame_mutex);
+    
+        if (!current_color_frame) {
+            return pybind11::array_t<uint8_t>();
+        }
+        
+        // Crear un array RGB
+        auto result = pybind11::array_t<uint8_t>({height, width, 3});
+        auto buf = result.request();
+        uint8_t* ptr = static_cast<uint8_t*>(buf.ptr);
+        
+        // Copiar los datos del frame de color
+        const uint8_t* color_data = static_cast<const uint8_t*>(current_color_frame->get_data());
+        std::memcpy(ptr, color_data, width * height * 3);
+        
+        return result;
+    }
+    
     void stop_streaming() {
         is_streaming = false;
         
@@ -255,5 +298,7 @@ PYBIND11_MODULE(realsense_cpp, m) {
              pybind11::arg("min_distance") = 0.1f,
              pybind11::arg("max_distance") = 2.0f)
         .def("get_distance_array", &RealSenseDistanceSensor::get_distance_array)
+        .def("get_current_depth_image", &RealSenseDistanceSensor::get_current_depth_image)
+        .def("get_image_rgb", &RealSenseDistanceSensor::get_image_rgb)
         .def("stop_streaming", &RealSenseDistanceSensor::stop_streaming);
 }

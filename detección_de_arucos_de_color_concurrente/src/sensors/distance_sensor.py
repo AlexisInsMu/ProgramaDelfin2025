@@ -127,6 +127,65 @@ class DistanceSensor:
         obstacles.sort(key=lambda obs: obs[0])
         return obstacles
     
+    def get_current_depth_image(self, colormap=True):
+        """Obtener imagen de profundidad con mapa de colores"""
+        if not self.is_streaming:
+            return None
+        
+        try:
+            # Obtener array de profundidad
+            depth_array = self.get_distance_array()
+            if depth_array is None:
+                return None
+                
+            # Normalizar para visualización
+            import cv2
+            import numpy as np
+            
+            # Filtrar valores no válidos (0) para no afectar normalización
+            valid_mask = depth_array > 0.001
+            
+            if np.any(valid_mask):
+                # Normalizar solo valores válidos
+                min_val = np.min(depth_array[valid_mask])
+                max_val = np.max(depth_array[valid_mask])
+                
+                # Crear imagen normalizada de 8 bits (0-255)
+                normalized = np.zeros_like(depth_array, dtype=np.uint8)
+                if max_val > min_val:
+                    normalized[valid_mask] = 255 * ((depth_array[valid_mask] - min_val) / (max_val - min_val))
+                
+                # Aplicar mapa de colores
+                if colormap:
+                    # Opciones de mapas de colores:
+                    # - cv2.COLORMAP_JET: azul a rojo (popular para profundidad)
+                    # - cv2.COLORMAP_INFERNO: negro a amarillo
+                    # - cv2.COLORMAP_TURBO: azul a rojo (más suave)
+                    # - cv2.COLORMAP_RAINBOW: violeta a rojo
+                    depth_colormap = cv2.applyColorMap(normalized, cv2.COLORMAP_JET)
+                    return depth_colormap
+                else:
+                    return normalized
+                
+        except Exception as e:
+            print(f"Error procesando imagen de profundidad: {e}")
+
+        return None
+    
+    def get_rgb_image(self):
+        """Obtener la imagen RGB actual"""
+        if not self.is_streaming:
+            return None
+
+        try:
+            rgb_array = self.sensor.get_image_rgb()
+            if rgb_array is not None and rgb_array.size > 0:
+                return rgb_array
+        except Exception as e:
+            print(f"Error obteniendo imagen RGB: {e}")
+
+        return None
+    
     def stop_streaming(self):
         """Detener streaming"""
         if self.is_streaming:

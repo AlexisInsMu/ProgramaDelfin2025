@@ -20,7 +20,8 @@ from src.control.car_controller import CarController
 SHOW_WINDOWS = {
     'camera': True,
     'processed': True,
-    'debug': True
+    'debug': True,
+    'depth': True
 }
 
 def main():
@@ -122,6 +123,8 @@ def main():
             cv2.namedWindow("ArUcos Detectados", cv2.WINDOW_NORMAL)
         if SHOW_WINDOWS['debug']:
             cv2.namedWindow("Depuración", cv2.WINDOW_NORMAL)
+        if SHOW_WINDOWS['depth']:
+            cv2.namedWindow("Imagen de Profundidad", cv2.WINDOW_NORMAL)
     
     try:
         while True:
@@ -141,6 +144,7 @@ def main():
                     distance_center = distance_sensor.get_distance_center()
                     obstacle_detected = distance_sensor.is_obstacle_detected(threshold=0.5)
                     closest_obstacle = distance_sensor.get_closest_obstacle()
+                    frame_depth = distance_sensor.get_current_depth_image()
                     
                     # Compartir datos de distancia
                     shared_data.set_data('distance_center', distance_center)
@@ -151,10 +155,12 @@ def main():
                     distance_center = 0.0
                     obstacle_detected = False
                     closest_obstacle = None
+                    frame_depth = None
             else:
                 distance_center = 0.0
                 obstacle_detected = False
                 closest_obstacle = None
+                frame_depth = None
             
             # Mostrar ventanas si GUI está disponible
             if show_gui:
@@ -217,6 +223,13 @@ def main():
                                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 2)
                     
                     cv2.imshow("Depuración", debug_frame)
+                
+                if SHOW_WINDOWS['depth'] and distance_sensor is not None:
+                    rgb_image = distance_sensor.get_rgb_image()
+                    if rgb_image is not None:
+                        cv2.imshow("Imagen RGB", rgb_image)
+                    if frame_depth is not None:
+                        cv2.imshow("Imagen de Profundidad", frame_depth)
                 
                 # Verificar teclas
                 key = cv2.waitKey(1) & 0xFF
