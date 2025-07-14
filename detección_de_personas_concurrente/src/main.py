@@ -17,6 +17,8 @@ from src.camera.image_processor import ImageProcessor
 from src.control.car_controller import CarController
 import numpy as np
 
+#interruptores para activar ventanas de visualización
+
 SHOW_WINDOWS ={
     'camera': True,       # Imagen original de la cámara
     'processed': True,    # Imagen procesada con visualizaciones
@@ -76,6 +78,8 @@ def main():
             largest_area = shared_data.get_data('largest_aruco_area', 0)
             alto = shared_data.get_data('alto', False)
             position = shared_data.get_data('position', "Unknown")
+            pose_center = shared_data.get_data('pose_center', None)
+            pose_confidence = shared_data.get_data('pose_confidence', 0.0)
             
             # Mostrar ventanas
             if SHOW_WINDOWS['camera'] and frame is not None:
@@ -87,31 +91,11 @@ def main():
             if SHOW_WINDOWS['debug'] and processed_frame is not None:
                 debug_frame = processed_frame.copy()
                 
-                # Información de ArUcos
-                if aruco_points is not None and len(aruco_points) > 0:
-                    num_arucos = len(aruco_points)
-                    cv2.putText(debug_frame, f"ArUcos: {num_arucos}", (10, 30), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
-                    
-                    # Dibujar centro del ArUco más grande
-                    if aruco_center is not None:
-                        center_x, center_y = aruco_center
-                        cv2.circle(debug_frame, (center_x, center_y), 10, (0, 0, 255), -1)
-                        cv2.putText(debug_frame, f"Centro: ({center_x}, {center_y})", 
-                                    (center_x + 15, center_y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
-                    
-                    # Mostrar área del ArUco más grande
-                    cv2.putText(debug_frame, f"Area Max: {largest_area:.0f}", (10, 60), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 0, 0), 2)
-                    
-                    # Estado del sistema
-                    status_color = (0, 0, 255) if alto else (0, 255, 0)
-                    status_text = "ALTO - ArUco Grande" if alto else "SIGUIENDO"
-                    cv2.putText(debug_frame, status_text, (10, 90), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.6, status_color, 2)
-                else:
-                    cv2.putText(debug_frame, "No ArUcos detectados", (10, 30), 
-                                cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 0, 255), 2)
+                # Mostrar información de la persona detectada con MediaPipe
+                if pose_center is not None:
+                    cv2.circle(debug_frame, pose_center, 10, (255, 0, 0), -1)
+                    cv2.putText(debug_frame, f"Persona: {pose_center} Conf: {pose_confidence:.2f}", 
+                                (pose_center[0] + 15, pose_center[1]), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 0), 2)
                 
                 # Mostrar posición del control
                 cv2.putText(debug_frame, f"Control: {position}", (10, 120), 

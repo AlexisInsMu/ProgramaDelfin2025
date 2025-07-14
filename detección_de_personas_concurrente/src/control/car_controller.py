@@ -17,9 +17,10 @@ class CarController:
     def control_loop(self):
         while self.running:
             # Obtener datos del sistema
-            aruco_center = self.shared_data.get_data('aruco_center', None)
+            pose_center = self.shared_data.get_data('pose_center', None)
+            print(f"Pose Center: {pose_center}")
             alto = self.shared_data.get_data('alto', False)
-            image_center_x = self.shared_data.get_data('center_x', 300)  # Centro de imagen por defecto
+            image_center_x = self.shared_data.get_data('center_x', 300)
             
             position = "Unknown"
             color = (255, 255, 255)  # Default color (white)
@@ -31,32 +32,26 @@ class CarController:
                 color = (0, 0, 255)  # Red
                 time.sleep(0.1)
                 
-            # Prioridad 2: Si hay ArUco detectado, seguirlo
-            elif aruco_center is not None:
-                aruco_x, aruco_y = aruco_center
-                
-                if aruco_x < image_center_x - 50:
-                    position = "Following ArUco - Left"
-                    color = (255, 255, 0)  # Yellow
+            # Prioridad 2: Si hay persona detectada, seguirla
+            elif pose_center is not None:
+                pose_x, pose_y = pose_center
+                if pose_x < image_center_x - 50:
+                    position = "Following Person - Left"
+                    color = (255, 0, 255)
                     self.car.Car_Left(40, 40)
-                    time.sleep(0.1)
-                    self.car.Car_Stop()
-                    
-                elif aruco_x > image_center_x + 50:
-                    position = "Following ArUco - Right"
-                    color = (255, 255, 0)  # Yellow
+                elif pose_x > image_center_x + 50:
+                    position = "Following Person - Right"
+                    color = (255, 0, 255)
                     self.car.Car_Right(40, 40)
-                    time.sleep(0.1)
-                    self.car.Car_Stop()
-                    
                 else:
-                    position = "Following ArUco - Center"
-                    color = (0, 255, 0)  # Green
+                    position = "Following Person - Center"
+                    color = (0, 255, 255)
                     self.car.Car_Run(40, 40)
-                    time.sleep(0.1)
-                    self.car.Car_Stop()
+                time.sleep(0.1)
+                self.car.Car_Stop()
             
-            # Prioridad 3: Si no hay ArUco, buscar girando
+            
+            # Prioridad 3: Si no hay persona, buscar gente, detenido
             else:
                 position = "Searching for ArUco"
                 color = (0, 0, 255)  # Red
