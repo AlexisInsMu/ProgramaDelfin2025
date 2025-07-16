@@ -4,12 +4,12 @@ import time
 
 class CarController:
 
-    def __init__(self, shared_data, distance_sensor=None):  # ← Agregar parámetro opcional
+    def __init__(self, shared_data, distance_sensor=None): 
         self.car = YB_Pcb_Car()
         self.running = True
         self.thread = Thread(target=self.control_loop)
         self.shared_data = shared_data
-        self.distance_sensor = distance_sensor  # ← Agregar esta línea
+        self.distance_sensor = distance_sensor
         self.thread.daemon = True 
         
     def start(self):

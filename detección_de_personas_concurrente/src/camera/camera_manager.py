@@ -13,14 +13,14 @@ class CameraManager:
 
     def start_stream(self):
         if not self.is_streaming:
-            self.capture = cv2.VideoCapture(self.camera_index)
-            self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
-            self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
-            if not self.capture.isOpened():
-                print("Error: No se pudo abrir la cámara")
-                return False
+            # self.capture = cv2.VideoCapture(self.camera_index)
+            # self.capture.set(cv2.CAP_PROP_FRAME_WIDTH, self.resolution[0])
+            # self.capture.set(cv2.CAP_PROP_FRAME_HEIGHT, self.resolution[1])
+            # if not self.capture.isOpened():
+            #     print("Error: No se pudo abrir la cámara")
+            #     return False
             
-            print(f"Cámara iniciada en {self.resolution[0]}x{self.resolution[1]}")
+            #print(f"Cámara iniciada en {self.resolution[0]}x{self.resolution[1]}")
             self.is_streaming = True
             self.thread = Thread(target=self._stream)
             self.thread.daemon = True
@@ -29,11 +29,13 @@ class CameraManager:
         return False
     def _stream(self):
         while self.is_streaming:
-            ret, frame = self.capture.read()
+            ret = self.shared_data.get_data('init_realsense', False)
             if ret:
-                self.shared_data.set_data('current_frame', frame)
-                center_x = self.resolution[0] // 2
-                self.shared_data.set_data('center_x', center_x)
+                frame = self.shared_data.get_data('frame_rgb', None)
+                if frame is not None:
+                    self.shared_data.set_data('current_frame', frame)
+                    center_x = self.resolution[0] // 2
+                    self.shared_data.set_data('center_x', center_x)
                 time.sleep(0.03)
             else:
                 print("Failed to read frame from camera")
@@ -44,4 +46,3 @@ class CameraManager:
             self.is_streaming = False
             if hasattr(self, 'thread') and self.thread.is_alive():
                 self.thread.join(timeout=1.0)
-            self.capture.release()

@@ -5,6 +5,7 @@ import os
 import numpy as np
 
 # Configurar backend de OpenCV
+#se puede comentar ya que solo funcionaba para permitir pantalla compartida por ssh con windows
 os.environ['QT_QPA_PLATFORM'] = 'xcb'
 os.environ['LIBGL_ALWAYS_INDIRECT'] = '1'
 
@@ -18,10 +19,10 @@ from src.control.car_controller import CarController
 
 # Configuración de ventanas
 SHOW_WINDOWS = {
-    'camera': True,
-    'processed': True,
-    'debug': True,
-    'depth': True
+    'camera': True,       # Imagen original de la cámara
+    'processed': True,    # Imagen procesada con visualizaciones
+    'debug': True,         # Información adicional de depuración
+    'depth': True          # Imagen de profundidad
 }
 
 def main():
