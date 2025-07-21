@@ -138,7 +138,6 @@ class ImageProcessor:
                     self.processed_frame = frame.copy()
 
                     results = self.pose_detector.detect_pose(frame)
-                    # CORREGIDO: pasar frame.shape en vez de frame
                     pose_center = self.pose_detector.get_centroid(
                         results, frame.shape)
 
@@ -152,6 +151,13 @@ class ImageProcessor:
                         self.shared_data.set_data('pose_center', pose_center)
                         self.shared_data.set_data(
                             'pose_confidence', self.pose_detector.get_pose_confidence(results))
+                        distance_center = self.shared_data.get_data('distance_center', 0.0)
+                        if distance_center < 1.1:
+                            self.shared_data.set_data('alto', True)
+                        else:
+                            self.shared_data.set_data('alto', False)
+                        alto = self.shared_data.get_data('alto', False)
+                        
                         
                     else:
                         self.shared_data.set_data('pose_center', None)

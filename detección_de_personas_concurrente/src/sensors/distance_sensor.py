@@ -180,7 +180,9 @@ class DistanceSensor:
         try:
             rgb_array = self.sensor.get_image_rgb()
             if rgb_array is not None and rgb_array.size > 0:
-                return rgb_array
+                import cv2
+                bgr_array = cv2.cvtColor(rgb_array, cv2.COLOR_RGB2BGR)
+                return bgr_array
         except Exception as e:
             print(f"Error obteniendo imagen RGB: {e}")
 

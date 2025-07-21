@@ -4,11 +4,12 @@ import time
 
 class CarController:
 
-    def __init__(self, shared_data):
+    def __init__(self, shared_data, distnce_sensor=None):
         self.car = YB_Pcb_Car()
         self.running = True
         self.thread = Thread(target=self.control_loop)
         self.shared_data = shared_data
+        self.distance_sensor = distnce_sensor
         self.thread.daemon = True 
         
     def start(self):
@@ -25,12 +26,16 @@ class CarController:
             position = "Unknown"
             color = (255, 255, 255)  # Default color (white)
             
-            # Prioridad 1: Si hay ArUco grande, detenerse
-            if alto is True:
+            # Obtener datos del sensor de distancia
+            obstacle_detected = self.shared_data.get_data('obstacle_detected', False)
+            distance_center = self.shared_data.get_data('distance_center', 0.0)
+            # Prioridad 1: detectar obstáculo
+            if obstacle_detected and distance_center < 1:
                 self.car.Car_Stop()
-                position = "Stopped - Large ArUco"
+                position = "Stopped - Obstacle detected"
                 color = (0, 0, 255)  # Red
                 time.sleep(0.1)
+                
                 
             # Prioridad 2: Si hay persona detectada, seguirla
             elif pose_center is not None:
@@ -53,7 +58,7 @@ class CarController:
             
             # Prioridad 3: Si no hay persona, buscar gente, detenido
             else:
-                position = "Searching for ArUco"
+                position = "Buscando personas"
                 color = (0, 0, 255)  # Red
                 self.car.Car_Stop()
             
