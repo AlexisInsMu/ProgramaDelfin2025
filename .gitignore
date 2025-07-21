@@ -6,6 +6,7 @@ arucos/arucos_pdf.pdf
 */__pycache__/
 *.pyc
 
+
 #ignore version
 =4.8.0.76
 4.8.0.76
@@ -25,3 +26,7 @@ Makefile
 setuptools_version.txt
 .python-version
 
+
+#imagenes
+images/
+*.png
