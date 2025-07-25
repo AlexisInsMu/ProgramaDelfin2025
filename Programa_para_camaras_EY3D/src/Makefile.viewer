@@ -1,0 +1,26 @@
+CXX = g++
+CXXFLAGS = -std=c++14 -O2 -Wall -pthread
+INCLUDES = -I./include -I./include/devices -I./include/video -I./include/sensors -I./include/base
+LIBPATH = -L./lib
+LIBS = -leys3d.NVIDIA_64 -lpthread
+
+# OpenCV
+OPENCV_CFLAGS = $(shell pkg-config --cflags opencv4 2>/dev/null || pkg-config --cflags opencv)
+OPENCV_LIBS = $(shell pkg-config --libs opencv4 2>/dev/null || pkg-config --libs opencv)
+
+TARGET = pipeline_viewer
+SOURCE = src/pipeline_viewer.cpp
+
+all: $(TARGET)
+
+$(TARGET): $(SOURCE)
+    $(CXX) $(CXXFLAGS) $(INCLUDES) $(OPENCV_CFLAGS) -o $(TARGET) $(SOURCE) $(LIBPATH) $(LIBS) $(OPENCV_LIBS)
+
+clean:
+    rm -f $(TARGET)
+
+install: $(TARGET)
+    mkdir -p ./out
+    cp $(TARGET) ./out/
+
+.PHONY: all clean install

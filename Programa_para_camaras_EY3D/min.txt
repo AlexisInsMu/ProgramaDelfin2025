@@ -1,0 +1,86 @@
+7-17 15:19:53.959 21394-21394 [INFO ] CameraDevice: load rectifylog succeeded...
+07-17 15:19:53.960 21394-21394 [INFO ] CameraDevice: IMU is not supported...
+07-17 15:19:54.009 21394-21394 [INFO ] Simple Viewer: Pipeline configurado: 640x480@15fps
+Gtk-Message: 15:19:54.041: Failed to load module "canberra-gtk-module"
+07-17 15:19:54.046 21394-21424 [INFO ] Simple Viewer: Presiona 'q' para salir, 's' para guardar siguiente imagen
+07-17 15:19:56.834 21394-21417 [INFO ] RegisterSettings: Loading register settings: /home/admini/Descargas/wrapper/out/eYs3D/cfg/DM_Quality_Cfg/EX8036_DM_Quality_Register_Setting.cfg
+07-17 15:19:56.835 21394-21415 [INFO ] RegisterSettings: Loading register settings: /home/admini/Descargas/wrapper/out/eYs3D/cfg/DM_Quality_Cfg/EX8036_DM_Quality_Register_Setting.cfg
+07-17 15:19:57.203 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=2
+07-17 15:19:57.210 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=3
+07-17 15:19:57.210 21394-21423 [ERROR] ConditionVariable:
+        The time specified by abstime to pthread_cond_timedwait() has passed.waitUntilUs(1752787197210596) : in(1752787194010802) : now(1752787197210723)
+        (/home/ubuntu/python_wrapper_sinet/libeYs3D/src/base/synchronization/ConditionVariable.h:214:timedWaitDebug)
+07-17 15:19:57.214 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=4
+07-17 15:19:57.384 21394-21394 [INFO ] CameraDevice: IMU device is not present...
+07-17 15:19:57.384 21394-21394 [INFO ] Simple Viewer: Stream iniciado. Presiona 's' para guardar, 'q' para salir.
+07-17 15:19:57.402 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=5
+07-17 15:19:57.403 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=3
+07-17 15:19:57.416 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=6
+07-17 15:19:57.428 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=7
+07-17 15:19:57.429 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=4
+07-17 15:19:57.440 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=8
+07-17 15:19:57.448 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=6
+07-17 15:19:57.455 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=9
+07-17 15:19:57.469 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=10
+07-17 15:19:57.470 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=9
+07-17 15:19:57.482 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=11
+07-17 15:19:57.489 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=10
+07-17 15:19:57.493 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=12
+07-17 15:19:57.506 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=11
+07-17 15:19:57.509 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=13
+07-17 15:19:57.516 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=12
+07-17 15:19:57.521 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=14
+07-17 15:19:57.527 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=15
+07-17 15:19:57.536 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=16
+07-17 15:19:57.551 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=17
+07-17 15:19:57.565 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=16
+07-17 15:19:57.566 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=18
+07-17 15:19:57.581 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=19
+07-17 15:19:57.585 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=19
+07-17 15:19:57.594 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=20
+07-17 15:19:57.599 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=21
+07-17 15:19:57.608 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=21
+07-17 15:19:57.612 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=22
+07-17 15:19:57.620 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=22
+07-17 15:19:57.623 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=23
+07-17 15:19:57.635 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=23
+07-17 15:19:57.637 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=24
+07-17 15:19:57.649 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=24
+07-17 15:19:57.649 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=25
+07-17 15:19:57.656 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=26
+07-17 15:19:57.663 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=25
+07-17 15:19:57.671 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=26
+07-17 15:19:57.678 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=27
+07-17 15:19:57.681 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=27
+07-17 15:19:57.706 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=28
+07-17 15:19:57.706 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=28
+07-17 15:19:57.737 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=29
+07-17 15:19:57.741 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=29
+07-17 15:19:57.773 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=30
+07-17 15:19:57.777 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=30
+07-17 15:19:57.805 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=31
+07-17 15:19:57.811 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=31
+07-17 15:19:57.838 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=32
+07-17 15:19:57.840 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=32
+07-17 15:19:57.872 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=33
+07-17 15:19:57.874 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=33
+07-17 15:19:57.907 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=34
+07-17 15:19:57.910 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=34
+07-17 15:19:57.936 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=35
+07-17 15:19:57.948 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=35
+07-17 15:19:57.974 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=36
+07-17 15:19:57.974 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=36
+07-17 15:19:58.006 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=37
+07-17 15:19:58.008 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=37
+07-17 15:19:58.038 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=38
+07-17 15:19:58.043 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=38
+07-17 15:19:58.073 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=39
+07-17 15:19:58.075 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=39
+07-17 15:19:58.107 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=40
+07-17 15:19:58.107 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=40
+07-17 15:19:58.136 21394-21423 [INFO ] Simple Viewer: [DEPTH] Frame: S/N=41
+07-17 15:19:58.141 21394-21422 [INFO ] Simple Viewer: [COLOR] Frame: S/N=41
+07-17 15:19:58.153 21394-21424 [INFO ] Simple Viewer: Guardado activado. Siguiente imagen se guardará...
+07-17 15:19:58.154 21394-21424 [INFO ] Simple Viewer: Guardando imagen #1: /tmp/eys3d_images/img_1_1752787198154
+./run_pipeline_viewer.sh: line 4: 21393 Segmentation fault      sudo ./pipeline_viewer.test
+
