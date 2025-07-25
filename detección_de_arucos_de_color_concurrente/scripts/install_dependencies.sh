@@ -1,5 +1,5 @@
 #!/bin/bash
-# filepath: /home/pi/Documentos/new_direc/ProgramaDelfin2025/install_realsense_complete.sh
+# filepath: /home/pi/Documentos/new_direc/ProgramaDelfin2025/install_dependencies.sh
 
 echo "=== Instalación Completa Intel RealSense D455 para Raspberry Pi 4 ==="
 

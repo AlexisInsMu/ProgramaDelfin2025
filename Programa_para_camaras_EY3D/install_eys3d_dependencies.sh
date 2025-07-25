@@ -56,53 +56,11 @@ apt install -y \
     libavresample-dev \
     x264 \
     v4l-utils
+# Instalar OpenCV
+sudo apt install libopencv-dev python3-opencv
+# Instalar eYs3D SDK
+echo "📥 Instalando eYs3D SDK...
 
-# Instalar Python packages
-echo "🐍 Instalando paquetes de Python..."
-pip3 install --upgrade pip
-pip3 install \
-    numpy \
-    opencv-python \
-    Pillow \
-    matplotlib \
-    scipy
-
-# Verificar instalación de OpenCV
-echo "🔍 Verificando instalación de OpenCV..."
-python3 -c "import cv2; print(f'OpenCV versión: {cv2.__version__}')"
-
-# Configurar permisos para USB
-echo "🔐 Configurando permisos USB..."
-usermod -a -G dialout $USER
-usermod -a -G video $USER
-
-# Crear reglas udev para cámaras eYs3D
-echo "📝 Creando reglas udev para cámaras eYs3D..."
-cat > /etc/udev/rules.d/99-eys3d-camera.rules << 'EOF'
-# eYs3D Camera Rules
-SUBSYSTEM=="usb", ATTR{idVendor}=="1e4e", MODE="0666", GROUP="video"
-SUBSYSTEM=="usb", ATTR{idVendor}=="04b4", MODE="0666", GROUP="video"
-SUBSYSTEM=="usb", ATTR{idVendor}=="0547", MODE="0666", GROUP="video"
-KERNEL=="video*", SUBSYSTEM=="video4linux", MODE="0666", GROUP="video"
-EOF
-
-# Recargar reglas udev
-udevadm control --reload-rules
-udevadm trigger
 
 echo "✅ Instalación completada!"
-echo ""
-echo "📋 Próximos pasos:"
-echo "1. Reinicia el sistema para aplicar cambios de permisos"
-echo "2. Conecta tu cámara eYs3D"
-echo "3. Verifica la conexión con: lsusb"
-echo "4. Ejecuta el programa Python: python3 eys3d_pipeline.py"
-echo ""
-echo "🔧 Para verificar que la cámara está conectada:"
-echo "   lsusb | grep -i eys3d"
-echo "   v4l2-ctl --list-devices"
-echo ""
-echo "⚠️  Nota: Si hay problemas con permisos, ejecuta:"
-echo "   sudo usermod -a -G video \$USER"
-echo "   sudo usermod -a -G dialout \$USER"
-echo "   Luego cierra sesión y vuelve a iniciar sesión"
+

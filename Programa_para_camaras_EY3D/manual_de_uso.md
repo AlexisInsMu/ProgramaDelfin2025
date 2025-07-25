@@ -30,6 +30,26 @@ siguiente comando:
 ./run_pipeline_viewer.sh
 ```
 
+Una vez que el programa esté en ejecución, deberías ver una ventana de visualización de la cámara eYs3D. Puedes interactuar con la interfaz para capturar imágenes y realizar otras acciones según las funcionalidades implementadas.
+Inicialemente pedira 
+```bash
+Ingrese el número de imágenes a capturar:
+```
+Debes ingresar un número entero que represente la cantidad de imágenes que deseas capturar. Por
+ejemplo, si deseas capturar 10 imágenes, ingresa `10` y presiona Enter.
+
+Luego pedirá el intervalo de tiempo entre capturas:
+```bash
+Ingrese el intervalo de tiempo entre capturas (en segundos):
+```
+Debes ingresar un número entero que represente el intervalo de tiempo en segundos entre cada captura de imagen. Por ejemplo, si deseas un intervalo de 2 segundos, ingresa `2` y presiona Enter.
+Después de ingresar estos valores, el programa comenzará a capturar imágenes de la cámara eYs3D según los parámetros especificados. Las imágenes se guardarán en un directorio específico dentro del proyecto.
+
+> [!NOTE]
+> Para salir del programa, puedes presionar `Ctrl + C` en la terminal donde se está ejecutando el script.
+> O bien puedes seleccionar una de las ventanas emergentes que se abrirán y presionar la tecla `q` para salir de la ventana de visualización.
+
+
 ## Contactos
 En caso de presentar algún problema o tener alguna duda, puedes contactar a los siguientes correos electrónicos:
 - **Alexis Novo**: amurillob2000@alumno.ipn.mx>
