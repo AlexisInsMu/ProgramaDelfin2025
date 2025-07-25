@@ -46,11 +46,8 @@ ProgramaDelfin2025/
 ├── detección_de_linea_de_color_secuencial/    # Detección de líneas (secuencial)
 ├── detección_de_personas_concurrente/         # Detección de personas con threading
 ├── pruebas_individuales/                      # Pruebas y experimentos
+├── Programa_para_camara_EY3D/                # Programa para cámara EY3D
 ├── raspberry-pi-car/                          # Implementación base del carro
-├── robot_env_new/                             # Entorno RealSense y dependencias
-│   ├── include/                              # Headers de librealsense2 y otras librerías
-│   ├── lib/                                  # Librerías compiladas
-│   └── bin/                                  # Ejecutables
 ├── test_x11.py                               # Pruebas de interfaz X11
 └── README.md                                 # Este archivo
 ```
@@ -61,7 +58,7 @@ ProgramaDelfin2025/
 - **Raspberry Pi 4** (recomendado) o superior
 - **Cámara Intel RealSense** (D435i/D455)
 - **Motores DC** con controladores
-- **Sensores ultrasónicos** para detección de obstáculos (temporalmente desabilitado para este proyecto)
+- **Sensores ultrasónicos** para detección de obstáculos (temporalmente deshabilitado para este proyecto)
 - **Tarjeta microSD** (32GB mínimo)
 
 ### Software
@@ -70,6 +67,7 @@ ProgramaDelfin2025/
 - **OpenCV 4.7+**
 - **librealsense2** (instalar repecto al sistema operativo que se use)
 - **X11** para interfaz gráfica
+
 
 ### Dependencias Python
 ```bash
@@ -82,7 +80,12 @@ concurrent.futures
 ```
 > [!WARNING]
 > tener cuidado con la libreria pyrealsense ya que depende del sistema operativo, su manera de instalar
-
+>
+> SI estan un sistema raspberry pi 4, pueden usar el siguiente comando dentro de la carpeta de cada implementación
+> ```bash
+> cd src/sensors/realsense_cpp/
+> python setup.py install
+> ``` 
 
 ## 🚀 Instalación
 
@@ -148,6 +151,11 @@ ejecutar el start_on_boot.sh para configurar las variables de entorno necesarias
 > [!Caution]
 > Solo compatible con la funcionalidad de detección de ArUco
 
+```bash
+cd detección_de_arucos_de_color_concurrente/
+chmod +x scripts/start_on_boot.sh
+./scripts/start_on_boot.sh
+```
 
 
 ## 🎯 Uso
@@ -185,18 +193,13 @@ python src/main.py
 ### 3. Detección de Personas
 - **Ubicación**: `detección_de_personas_concurrente/`
 - **Funcionalidad**: Detección y seguimiento de personas
-- **Tecnología**: YOLO/HOG + SVM con threading
+- **Tecnología**: Mediapipe DE Google y threading
 - **Aplicación**: Navegación segura y evitación de obstáculos
 
 ### 4. Control de Motores
 - **Ubicación**: `raspberry-pi-car/`
 - **Funcionalidad**: Control de movimiento del carro
 - **Características**: PWM, control de velocidad, giros
-
-### 5. Integración RealSense
-- **Ubicación**: `robot_env_new/`
-- **Funcionalidad**: Manejo de cámara Intel RealSense
-- **Características**: Visión 3D, mapeo de profundidad
 
 ## 🧪 Pruebas
 
@@ -259,7 +262,25 @@ python src/main.py
 
 # Ver logs del sistema
 journalctl -u [servicio] -f
+
+
+## Scripts extras
+## Script para usar camaras EY3D en Jetson Nano
+### Requisitos
+- **Jetson Nano** con Ubuntu 18.04 o superior
+- **Cámara EY3D** conectada
+- **Python 3.6+** instalado
+### Instalación de Dependencias
+
+```bash
+cd programa_para_camara_EY3D/
+chmod +x scripts/install_eys3d_dependencies.sh
+./scripts/install_eys3d_dependencies.sh
+
+./build_NVIDIA.sh
+./run_pipeline_viewer.sh
 ```
+
 
 ## 🤝 Contribución
 
@@ -279,6 +300,7 @@ journalctl -u [servicio] -f
 ## 📄 Licencia
 
 Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
+Consideración impotante, la licencia para el subproyecto de uso de camaras EYS3D contiene codigo bajo la licencia Apache 2.0, por lo que se debe de considerar al momento de hacer uso de este subproyecto.
 
 ---
 
